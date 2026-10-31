@@ -4,16 +4,18 @@ import { db } from '@/lib/db';
 import { comparisons, candidates, catalogModels } from '@/drizzle/schema';
 import { requireUser } from '@/lib/auth';
 import { deleteEvaluationAction } from '@/actions/evaluations';
+import { DashboardInteractiveCockpit } from '@/components/dashboard/dashboard-interactive-cockpit';
+import { ProviderLogo } from '@/components/brand/provider-logo';
 import {
   Plus,
   Trash2,
-  ArrowRight,
   TrendingDown,
   Layers,
-  Award,
   Zap,
-  ShieldCheck,
-  ExternalLink,
+  Sparkles,
+  ArrowRight,
+  Lock,
+  BarChart2,
 } from 'lucide-react';
 
 export default async function DashboardPage() {
@@ -25,7 +27,6 @@ export default async function DashboardPage() {
     .where(eq(comparisons.clerkUserId, userId))
     .orderBy(desc(comparisons.createdAt));
 
-  // Get recommended candidates for all completed comparisons in one query
   const compIds = userComparisons.filter((c) => c.status === 'done').map((c) => c.id);
   const recCandidates =
     compIds.length > 0
@@ -52,240 +53,229 @@ export default async function DashboardPage() {
   const totalUsed = userComparisons.length;
   const maxLimit = 20;
 
-  // Compute aggregate stats
   const completedCount = userComparisons.filter((c) => c.status === 'done').length;
   const totalVolume = userComparisons.reduce((acc, c) => acc + (c.conversationsPerMonth || 0), 0);
-  const estimatedSavings = completedCount * 1485; // Baseline conservative benchmark
+  const activeSavings = completedCount > 0 ? completedCount * 1485 : 1485;
 
   return (
-    <div className="space-y-8">
-      {/* Page Title & Intro */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-serif font-semibold text-[#0A2E2B]">
-            Right-Sizing Overview
+    <div className="space-y-8 relative">
+      {/* WORKSPACE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-accent/10 text-accent border border-accent/25">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse-dot" />
+              <Lock className="w-3 h-3" />
+              Volatile RAM Enclave Active
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-display font-bold text-ink tracking-tight">
+            Model Right-Sizing Overview
           </h1>
-          <p className="text-xs sm:text-sm text-[#4B605C] mt-0.5">
-            Real-time inference spend analytics, empirical evaluation logs, and right-sized model savings.
+          <p className="text-sm text-muted max-w-2xl leading-relaxed">
+            Real-time inference spend analytics, parallel arena evaluations, and calibrated unit economics.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <Link href="/c/new" className="btn-ledger text-xs sm:text-sm px-4 py-2">
-            <Plus className="w-4 h-4" /> Run New Evaluation
+          <Link href="/dashboard/evaluations/new" className="btn-ledger btn-sm">
+            <Plus className="w-4 h-4" aria-hidden="true" />
+            <span>Run New Evaluation</span>
           </Link>
         </div>
       </div>
 
-      {/* KPI Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-[#D3DDD8] rounded-xl p-5 space-y-2 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-[#4B605C]">
-            <span>Monthly Savings Found</span>
-            <TrendingDown className="w-4 h-4 text-[#8A5A0B]" />
-          </div>
-          <div className="font-serif text-3xl font-semibold text-[#8A5A0B]">
-            +${estimatedSavings.toLocaleString()}
-          </div>
-          <div className="text-[11px] text-[#4B605C]">
-            ${(estimatedSavings * 12).toLocaleString()} / year projected
-          </div>
+      {/* 4-COLUMN KPI TELEMETRY RIBBON */}
+      <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Monthly Savings */}
+        <div className="glass-card glass-card-interactive p-5 space-y-2.5">
+          <dt className="text-xs font-semibold text-muted flex items-center justify-between uppercase tracking-wider">
+            <span>{completedCount > 0 ? 'Monthly Savings' : 'Benchmark Baseline'}</span>
+            <TrendingDown className="w-4 h-4 text-accent" />
+          </dt>
+          <dd className="space-y-1">
+            <div className="text-3xl sm:text-4xl font-display font-bold text-ink tracking-tight tabular-nums flex items-baseline gap-1">
+              <span>+${activeSavings.toLocaleString()}</span>
+              <span className="text-xs font-normal text-muted">/mo</span>
+            </div>
+            <div className="text-xs font-medium text-accent">
+              <span>+${(activeSavings * 12).toLocaleString()}/yr</span>{' '}
+              <span className="text-muted font-normal">
+                {completedCount > 0 ? 'redirected to runway' : 'projected at 50k chats/mo'}
+              </span>
+            </div>
+          </dd>
         </div>
 
-        <div className="bg-white border border-[#D3DDD8] rounded-xl p-5 space-y-2 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-[#4B605C]">
-            <span>Evaluations Run</span>
-            <Layers className="w-4 h-4 text-[#1F5C55]" />
-          </div>
-          <div className="font-serif text-3xl font-semibold text-[#0A2E2B]">
-            {totalUsed} <span className="text-sm font-sans font-normal text-[#4B605C]">/ {maxLimit}</span>
-          </div>
-          <div className="text-[11px] text-[#1F5C55] font-semibold">
-            {completedCount} completed audits
-          </div>
+        {/* Card 2: Audits Run */}
+        <div className="glass-card glass-card-interactive p-5 space-y-2.5">
+          <dt className="text-xs font-semibold text-muted flex items-center justify-between uppercase tracking-wider">
+            <span>Arena Quota</span>
+            <Layers className="w-4 h-4 text-accent" />
+          </dt>
+          <dd className="space-y-1.5">
+            <div className="text-3xl sm:text-4xl font-display font-bold text-ink tracking-tight tabular-nums flex items-baseline gap-1.5">
+              <span>{totalUsed}</span>
+              <span className="text-sm font-normal text-muted">/ {maxLimit}</span>
+            </div>
+            <div className="w-full h-2 bg-paper-3 rounded-full overflow-hidden border border-rule">
+              <div
+                className="h-full bg-accent rounded-full"
+                style={{ width: `${Math.min(100, Math.max(6, (totalUsed / maxLimit) * 100))}%` }}
+              />
+            </div>
+            <div className="text-xs text-muted font-medium">
+              {completedCount > 0
+                ? `${completedCount} completed audits`
+                : 'Pro Founder quota available'}
+            </div>
+          </dd>
         </div>
 
-        <div className="bg-white border border-[#D3DDD8] rounded-xl p-5 space-y-2 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-[#4B605C]">
-            <span>Total Query Volume</span>
-            <Zap className="w-4 h-4 text-[#0A2E2B]" />
-          </div>
-          <div className="font-serif text-3xl font-semibold text-[#0A2E2B]">
-            {totalVolume.toLocaleString()}
-          </div>
-          <div className="text-[11px] text-[#4B605C]">
-            Monthly conversations benchmarked
-          </div>
+        {/* Card 3: Audited Volume */}
+        <div className="glass-card glass-card-interactive p-5 space-y-2.5">
+          <dt className="text-xs font-semibold text-muted flex items-center justify-between uppercase tracking-wider">
+            <span>{totalVolume > 0 ? 'Audited Volume' : 'Reference Volume'}</span>
+            <BarChart2 className="w-4 h-4 text-accent" />
+          </dt>
+          <dd className="space-y-1">
+            <div className="text-3xl sm:text-4xl font-display font-bold text-ink tracking-tight tabular-nums">
+              {totalVolume > 0 ? totalVolume.toLocaleString() : '50,000'}
+            </div>
+            <div className="text-xs text-muted font-medium">
+              {totalVolume > 0 ? 'Monthly conversations audited' : 'Benchmark chats / month'}
+            </div>
+          </dd>
         </div>
 
-        <div className="bg-white border border-[#D3DDD8] rounded-xl p-5 space-y-2 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-[#4B605C]">
-            <span>Avg Cost Reduction</span>
-            <Award className="w-4 h-4 text-[#B87A14]" />
-          </div>
-          <div className="font-serif text-3xl font-semibold text-[#1F5C55]">
-            94.2%
-          </div>
-          <div className="text-[11px] text-[#4B605C]">
-            Versus uncalibrated frontier tier
-          </div>
+        {/* Card 4: Platform Avg Delta */}
+        <div className="glass-card glass-card-interactive p-5 space-y-2.5">
+          <dt className="text-xs font-semibold text-muted flex items-center justify-between uppercase tracking-wider">
+            <span>Efficiency Delta</span>
+            <Zap className="w-4 h-4 text-accent" />
+          </dt>
+          <dd className="space-y-1">
+            <div className="text-3xl sm:text-4xl font-display font-bold text-accent tracking-tight tabular-nums">
+              94.2%
+            </div>
+            <div className="text-xs text-muted font-medium">
+              Spend reduction vs. uncalibrated frontier
+            </div>
+          </dd>
         </div>
-      </div>
+      </dl>
 
-      {/* Model Efficiency & Right-Sizing Matrix Banner */}
-      <section className="bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-4 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#D3DDD8] pb-3">
-          <div>
-            <h3 className="text-base font-serif font-semibold text-[#0A2E2B]">
-              Model Cost vs. Quality Efficiency Frontier
-            </h3>
-            <p className="text-xs text-[#4B605C]">
-              Empirical tradeoff: how lightweight models achieve 95%+ of frontier quality at 5% of the cost.
-            </p>
-          </div>
-          <Link href="/dashboard/spending" className="text-xs font-semibold text-[#0A2E2B] hover:text-[#1F5C55] flex items-center gap-1">
-            View Spend Analytics <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+      {/* INTERACTIVE PARETO & ENCLAVE COCKPIT */}
+      <DashboardInteractiveCockpit />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1 text-xs">
-          <div className="p-4 rounded-lg bg-[#FAFCFB] border border-[#D3DDD8] space-y-2">
-            <div className="flex justify-between items-center text-[#4B605C]">
-              <span className="font-semibold text-[#0A2E2B]">Frontier Generalist</span>
-              <span className="text-[10px] bg-stone-200 px-2 py-0.5 rounded text-stone-700">Top Tier</span>
-            </div>
-            <div className="text-xs text-[#4B605C]">Claude 3.5 Sonnet / Opus</div>
-            <div className="font-serif text-xl font-semibold text-[#0A2E2B]">$1,500.00 / mo</div>
-            <div className="w-full bg-[#D3DDD8] rounded-full h-1.5 overflow-hidden">
-              <div className="bg-[#4B605C] h-1.5 rounded-full" style={{ width: '98%' }} />
-            </div>
-            <div className="text-[11px] text-[#4B605C]">Quality Score: 95/100</div>
-          </div>
-
-          <div className="p-4 rounded-lg bg-[#FBF3E2] border-2 border-[#B87A14] space-y-2 relative">
-            <div className="flex justify-between items-center text-[#8A5A0B]">
-              <span className="font-bold text-[#0A2E2B]">Right-Sized Model</span>
-              <span className="pill rec">Optimal</span>
-            </div>
-            <div className="text-xs text-[#0A2E2B]">Claude Haiku 5.5 / Gemini Flash</div>
-            <div className="font-serif text-xl font-bold text-[#8A5A0B]">$15.00 / mo</div>
-            <div className="w-full bg-[#D3DDD8] rounded-full h-1.5 overflow-hidden">
-              <div className="bg-[#1F5C55] h-1.5 rounded-full" style={{ width: '88%' }} />
-            </div>
-            <div className="text-[11px] text-[#0A2E2B] font-semibold">Quality Score: 88/100 (Passes bar)</div>
-          </div>
-
-          <div className="p-4 rounded-lg bg-[#EDF2EF] border border-[#D3DDD8] flex flex-col justify-between space-y-2">
-            <div>
-              <div className="font-semibold text-[#0A2E2B] text-sm">Monthly Capital Saved</div>
-              <p className="text-xs text-[#4B605C] mt-1">
-                Right-sizing redirects $1,485/mo back to product development and runway.
-              </p>
-            </div>
-            <div className="pt-2 border-t border-[#D3DDD8]">
-              <Link href="/c/new" className="btn-ledger w-full py-2 text-xs justify-center">
-                Test Next Feature
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Recent Evaluations Ledger */}
+      {/* RECENT EVALUATIONS LEDGER */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#D3DDD8] pb-3">
-          <div>
-            <h2 className="text-xl font-serif font-semibold text-[#0A2E2B]">
-              Recent Evaluations Ledger
+        <div className="flex items-center justify-between border-b border-rule pb-3">
+          <div className="space-y-1">
+            <h2 className="text-xl font-display font-bold text-ink tracking-tight">
+              Recent Evaluations
             </h2>
-            <p className="text-xs text-[#4B605C]">
-              Historical records of your domain formulations and arena comparisons.
+            <p className="text-sm text-muted">
+              Historical records of your domain formulations, blinded arena runs, and calibrated models.
             </p>
           </div>
           <Link
             href="/dashboard/evaluations"
-            className="text-xs font-semibold text-[#0A2E2B] hover:text-[#1F5C55] flex items-center gap-1"
+            className="btn-ledger-ghost btn-sm whitespace-nowrap"
           >
-            All Evaluations ({totalUsed}) <ArrowRight className="w-3.5 h-3.5" />
+            All evaluations ({totalUsed})
           </Link>
         </div>
 
         {userComparisons.length === 0 ? (
-          <div className="bg-white rounded-xl border border-[#D3DDD8] p-12 text-center space-y-4 max-w-lg mx-auto shadow-xs">
-            <div className="w-12 h-12 rounded-full bg-[#EDF2EF] text-[#0A2E2B] flex items-center justify-center mx-auto">
-              <Plus className="w-6 h-6" />
+          <div className="glass-card p-10 text-center space-y-4 max-w-xl mx-auto border border-rule">
+            <div className="w-12 h-12 rounded-pill glass-well text-accent flex items-center justify-center mx-auto border border-rule">
+              <Sparkles className="w-6 h-6" aria-hidden="true" />
             </div>
-            <div className="space-y-1">
-              <h3 className="text-lg font-serif font-semibold text-[#0A2E2B]">No evaluations yet</h3>
-              <p className="text-xs text-[#4B605C]">
-                Describe your business use case and test candidate models in the automated parallel arena.
+            <div className="space-y-1.5">
+              <h3 className="text-lg font-display font-bold text-ink">
+                No custom evaluations yet
+              </h3>
+              <p className="text-sm text-muted leading-relaxed">
+                Upload your customer FAQs or describe your business workflow to test 5 candidate models in the blinded parallel arena.
               </p>
             </div>
-            <Link href="/c/new" className="btn-ledger text-xs sm:text-sm">
-              Start Your First Evaluation
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <Link
+                href="/dashboard/evaluations/new"
+                className="btn-ledger btn-sm w-full sm:w-auto"
+              >
+                <Plus className="w-4 h-4" aria-hidden="true" />
+                <span>Create custom evaluation</span>
+              </Link>
+              <Link
+                href="/case-study"
+                className="btn-ledger-ghost btn-sm w-full sm:w-auto"
+              >
+                Review Nari Boutique audit
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {userComparisons.slice(0, 5).map((comp) => {
               const rec = recByComp.get(comp.id);
               const getDestination = () => {
-                if (comp.status === 'done') return `/c/${comp.id}`;
-                if (comp.status === 'analyzed') return `/c/${comp.id}/review`;
-                if (comp.status === 'testing' || comp.status === 'judged') return `/c/${comp.id}/arena`;
-                return `/c/${comp.id}`;
+                if (comp.status === 'done') return `/dashboard/evaluations/${comp.id}`;
+                if (comp.status === 'analyzed') return `/dashboard/evaluations/${comp.id}/review`;
+                if (comp.status === 'testing' || comp.status === 'judged')
+                  return `/dashboard/evaluations/${comp.id}/arena`;
+                return `/dashboard/evaluations/${comp.id}`;
               };
 
               return (
                 <div
                   key={comp.id}
-                  className="bg-white rounded-xl border border-[#D3DDD8] p-5 hover:border-[#A9BDB7] transition shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  className="glass-card glass-card-interactive p-5 flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold capitalize ${
+                        className={`pill text-xs font-semibold ${
                           comp.status === 'done'
-                            ? 'bg-[#EDF2EF] text-[#1F5C55] border border-[#D3DDD8]'
+                            ? 'emerald'
                             : comp.status === 'testing'
-                            ? 'bg-[#FBF3E2] text-[#8A5A0B] border border-[#E7B44A]'
-                            : 'bg-stone-100 text-stone-600'
+                            ? 'rec'
+                            : ''
                         }`}
                       >
                         {comp.status === 'done' ? 'Completed Audit' : comp.status}
                       </span>
-                      <span className="text-xs text-[#4B605C]">
+                      <span className="text-xs text-muted tabular-nums">
                         {new Date(comp.createdAt).toLocaleDateString()}
                       </span>
                     </div>
 
                     <Link href={getDestination()} className="block group">
-                      <h3 className="text-base font-semibold text-[#0A2E2B] group-hover:text-[#1F5C55] transition">
+                      <h3 className="text-base font-bold text-ink group-hover:text-accent transition-colors">
                         {comp.title}
                       </h3>
                     </Link>
 
-                    <div className="flex items-center gap-3 text-xs text-[#4B605C]">
-                      <span>{comp.conversationsPerMonth.toLocaleString()} convs/mo</span>
-                      <span>•</span>
-                      <span className="capitalize">{comp.conversationLength} depth</span>
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-muted">
+                      <span className="tabular-nums font-medium">
+                        {comp.conversationsPerMonth.toLocaleString()} convs/mo
+                      </span>
+                      <span className="border-l border-rule pl-4 capitalize">
+                        {comp.conversationLength} depth
+                      </span>
                       {rec && (
-                        <>
-                          <span>•</span>
-                          <span className="text-[#0A2E2B] font-semibold">
-                            Winner: {rec.name || rec.modelId} (${rec.monthlyCostUsd?.toLocaleString()}/mo)
-                          </span>
-                        </>
+                        <span className="border-l border-rule pl-4 text-accent font-semibold tabular-nums inline-flex items-center gap-1.5">
+                          <ProviderLogo provider={rec.name || rec.modelId} size="xs" />
+                          <span>Winner: {rec.name || rec.modelId} (${rec.monthlyCostUsd?.toLocaleString()}/mo)</span>
+                        </span>
                       )}
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3 self-end md:self-center">
-                    <Link
-                      href={getDestination()}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#0A2E2B] bg-[#EDF2EF] hover:bg-[#D3DDD8] rounded-lg transition"
-                    >
-                      View Report
+                    <Link href={getDestination()} className="btn-ledger-ghost btn-sm">
+                      <span>Open Arena Report</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
 
@@ -297,10 +287,10 @@ export default async function DashboardPage() {
                     >
                       <button
                         type="submit"
-                        className="p-1.5 text-[#4B605C] hover:text-red-600 transition cursor-pointer"
-                        title="Delete evaluation"
+                        aria-label="Delete evaluation"
+                        className="p-2 text-muted hover:text-error transition-colors rounded-input hover:bg-paper-3 cursor-pointer"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
                       </button>
                     </form>
                   </div>

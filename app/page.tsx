@@ -1,245 +1,490 @@
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, CheckCircle2, ShieldCheck } from 'lucide-react';
+import {
+  CheckCircle2,
+  ShieldCheck,
+  ArrowRight,
+  Zap,
+  Layers,
+  Lock,
+  Scale,
+  FileText,
+  TrendingDown,
+  BarChart2,
+  Sparkles,
+} from 'lucide-react';
+import { InteractiveRoiDemo } from '@/components/marketing/interactive-roi-demo';
+import { InteractiveProviderDock } from '@/components/marketing/interactive-provider-dock';
+import { InteractiveArchitectureBento } from '@/components/marketing/interactive-architecture-bento';
+import { ModelMatrixTable } from '@/components/marketing/model-matrix-table';
+import { ClerkSpecimenGrid } from '@/components/marketing/clerk-specimen-grid';
+import { ClerkCrosshair, ClerkLaserDivider, ClerkBentoChassis } from '@/components/brand/clerk-grid';
+import { ProviderLogo } from '@/components/brand/provider-logo';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      '@id': 'https://benchcraft.dev/#software',
+      name: 'BenchCraft',
+      applicationCategory: 'DeveloperApplication, BusinessApplication',
+      operatingSystem: 'All',
+      url: 'https://benchcraft.dev',
+      description:
+        'Empirical AI model evaluation and right-sizing workbench for engineering teams. Benchmark 5 candidate models concurrently with Zero Data Retention and temperature-0 rubric audits.',
+      offers: {
+        '@type': 'Offer',
+        price: '29.00',
+        priceCurrency: 'USD',
+        priceValidUntil: '2027-12-31',
+        availability: 'https://schema.org/InStock',
+      },
+      featureList: [
+        'Blinded Parallel Model Arena',
+        'Cryptographic Zero Data Retention (zdr: true)',
+        'Temperature 0 Rubric LLM Judge',
+        '2D Pareto Frontier Cost vs Accuracy Mapping',
+        'Executive Audit Artifact PDF & JSON Export',
+      ],
+    },
+    {
+      '@type': 'Organization',
+      '@id': 'https://benchcraft.dev/#organization',
+      name: 'BenchCraft',
+      url: 'https://benchcraft.dev',
+      logo: 'https://benchcraft.dev/benchcraft-lockup-dark.png',
+      sameAs: ['https://github.com/benchcraft', 'https://twitter.com/benchcraft'],
+    },
+  ],
+};
 
 export default function HomePage() {
   return (
-    <div className="space-y-20 py-4">
-      {/* Editorial Opening */}
-      <section className="max-w-3xl space-y-6 pt-2">
-        <h1 className="text-4xl sm:text-5xl font-serif font-semibold tracking-[-0.02em] text-[#0A2E2B] leading-[1.15]">
-          Right-sized AI model evaluation for founders who care about unit economics.
-        </h1>
+    <div className="space-y-16 sm:space-y-24 py-4 sm:py-8 relative">
+      {/* Schema.org JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
-        <p className="text-base sm:text-lg text-[#4B605C] leading-relaxed max-w-[66ch]">
-          Public leaderboards rank general capability on generic benchmarks. BenchCraft tests candidate models
-          directly against your business documents, query volume, and quality thresholds in an automated parallel arena.
-        </p>
+      {/* Ambient Background Tech Grid + Top Beam (Linear + Vercel + Clerk DNA) */}
+      <div className="fixed inset-0 bg-tech-grid pointer-events-none -z-20 opacity-60" />
+      <div className="fixed inset-x-0 top-0 h-[560px] glow-beam pointer-events-none -z-10" />
 
-        <div className="flex flex-wrap items-center gap-4 pt-1">
-          <Link
-            href="/c/new"
-            className="btn-ledger text-sm sm:text-base px-6 py-3"
-          >
-            Start Business Evaluation
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="#case-study"
-            className="btn-ledger-ghost text-sm sm:text-base px-5 py-2.5"
-          >
-            Review Nari Case Study
-            <ArrowUpRight className="w-4 h-4 text-[#4B605C]" />
-          </Link>
-        </div>
+      {/* 01 // HERO: The High-Status Engineering Workbench */}
+      <section className="relative group">
+        <ClerkCrosshair position="tl" />
+        <ClerkCrosshair position="tr" />
 
-        <div className="flex flex-wrap items-center gap-6 pt-2 text-xs text-[#4B605C]">
-          <span className="flex items-center gap-1.5 font-semibold text-[#1F5C55]">
-            <span className="w-2 h-2 rounded-full bg-[#1F5C55]" />
-            ZERO DATA RETENTION
-          </span>
-          <span className="text-[#A9BDB7]">•</span>
-          <span>EMPIRICAL SCENARIO ARENA</span>
-          <span className="text-[#A9BDB7]">•</span>
-          <span>OFFICIAL LIST PRICING</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[74dvh] relative">
+          {/* Ambient Light Orbs for Glass Refraction */}
+          <div className="absolute top-1/3 -left-24 w-96 h-96 bg-accent/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-8 left-1/3 w-80 h-80 bg-signal/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="lg:col-span-5 space-y-6 relative z-10">
+            {/* Coordinate + Live Gateway Pill */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-outlier font-semibold text-muted uppercase tracking-wider px-2.5 py-1 rounded-full glass-well border border-rule">
+                [01 // WORKBENCH]
+              </span>
+              <div
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-pill glass-card text-xs font-semibold text-accent border border-accent/30"
+                role="status"
+              >
+                <span className="w-2 h-2 rounded-full bg-accent animate-pulse-dot" />
+                <span>Zero Data Retention Enforced</span>
+              </div>
+            </div>
+
+            {/* Hybrid Typography Headline (Hanken Grotesk + Editorial Newsreader Italic) */}
+            <h1 className="text-display font-display font-bold text-ink leading-[1.05] tracking-tight">
+              Cut AI model spend without dropping{' '}
+              <span className="font-editorial italic font-semibold text-accent">
+                domain accuracy.
+              </span>
+            </h1>
+
+            <p className="lead text-muted text-base sm:text-lg leading-relaxed">
+              Benchmark five candidate models against your real customer FAQs and policies in a blinded arena. Right-size your inference bill by up to{' '}
+              <strong className="font-editorial font-bold text-signal text-xl num">94.2%</strong>{' '}
+              with mathematical proof.
+            </p>
+
+            {/* Mini Provider Avatar Stack */}
+            <div className="flex items-center gap-3 pt-0.5">
+              <div className="flex -space-x-1.5">
+                <ProviderLogo provider="anthropic" size="sm" />
+                <ProviderLogo provider="openai" size="sm" />
+                <ProviderLogo provider="google" size="sm" />
+                <ProviderLogo provider="meta" size="sm" />
+                <ProviderLogo provider="deepseek" size="sm" />
+                <ProviderLogo provider="mistral" size="sm" />
+                <ProviderLogo provider="alibaba" size="sm" />
+                <ProviderLogo provider="azure" size="sm" />
+                <ProviderLogo provider="aws" size="sm" />
+                <ProviderLogo provider="groq" size="sm" />
+              </div>
+              <span className="text-xs text-muted font-medium">
+                40+ frontier &amp; open-weights models benchmarked live
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <Link href="/dashboard/evaluations/new" className="btn-ledger">
+                <span>Start business evaluation</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <a href="#model-matrix" className="btn-ledger-ghost">
+                Explore live matrix
+              </a>
+            </div>
+
+            {/* Frosted Glass Telemetry Ribbon */}
+            <dl className="grid grid-cols-3 gap-3 p-4 rounded-card glass-card text-xs sm:text-sm border border-rule/80">
+              <div>
+                <dt className="text-muted text-[10px] font-outlier uppercase tracking-wider font-semibold">
+                  Gateway Privacy
+                </dt>
+                <dd className="font-semibold text-ink mt-1 flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-accent" />
+                  <span>RAM Enclave</span>
+                </dd>
+              </div>
+              <div className="border-l border-rule pl-3">
+                <dt className="text-muted text-[10px] font-outlier uppercase tracking-wider font-semibold">
+                  Parallel Arena
+                </dt>
+                <dd className="font-semibold text-ink mt-1 num flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-accent" />
+                  <span>5 Models Live</span>
+                </dd>
+              </div>
+              <div className="border-l border-rule pl-3">
+                <dt className="text-muted text-[10px] font-outlier uppercase tracking-wider font-semibold">
+                  Verified ROI
+                </dt>
+                <dd className="font-editorial font-bold text-signal text-base mt-0.5 num flex items-center gap-1">
+                  <TrendingDown className="w-3.5 h-3.5" />
+                  <span>94.2% saved</span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          {/* Right Column: Interactive Glassmorphic Arena Cockpit */}
+          <div className="lg:col-span-7 relative z-10">
+            <InteractiveRoiDemo />
+          </div>
         </div>
       </section>
 
-      {/* Case Study: Precision Ledger Comparison */}
-      <section id="case-study" className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#D3DDD8] pb-4">
-          <div>
-            <h2 className="text-2xl font-serif font-semibold text-[#0A2E2B]">
-              The Cost of Defaulting to Frontier Models
+      {/* CLERK LASER DIVIDER 01 -> 02 */}
+      <ClerkLaserDivider label="02 // PROVIDER ECOSYSTEM" sublabel="MULTI-GATEWAY DOCK" />
+
+      {/* 02 // INTERACTIVE PROVIDER ECOSYSTEM DOCK */}
+      <section aria-label="Interactive Provider Explorer">
+        <InteractiveProviderDock />
+      </section>
+
+      {/* CLERK LASER DIVIDER 02 -> 03 */}
+      <ClerkLaserDivider label="03 // SECURITY & ENCLAVE" sublabel="ZDR-v2.8-tmpfs" />
+
+      {/* 03 // CLERK-GRADE ARCHITECTURAL SPECIMEN RACK */}
+      <section id="specimens" className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-outlier font-semibold text-muted uppercase tracking-wider px-2.5 py-1 rounded-full glass-well border border-rule">
+                [03 // SPECIMEN RACK]
+              </span>
+              <span className="pill emerald text-xs">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Clerk-Style Double Bezel
+              </span>
+            </div>
+            <h2 className="text-section font-display font-bold text-ink tracking-tight">
+              Tactile security enclaves &amp;{' '}
+              <span className="font-editorial italic font-semibold text-accent">
+                live cost arbitrage.
+              </span>
             </h2>
-            <p className="text-xs text-[#4B605C] mt-1">
-              Empirical case audit: Nari Boutique (Customer Support Chat · 50,000 monthly conversations)
+            <p className="lead text-muted text-base leading-relaxed">
+              Interact directly with BenchCraft’s cryptographic memory purging, real-time volume slider, and deterministic rubric judges.
             </p>
           </div>
-          <div className="text-xs font-semibold text-[#0A2E2B] bg-[#EDF2EF] px-3.5 py-1.5 rounded-full border border-[#D3DDD8]">
-            NET SAVINGS: <span className="font-bold text-[#8A5A0B]">+$1,485.00 / month</span>
+          <div className="text-xs text-muted font-outlier">
+            Built with <strong className="text-accent">zdr: true</strong> protocol
           </div>
         </div>
 
-        {/* Ledger Comparison Grid */}
-        <div className="border border-[#D3DDD8] bg-white rounded-xl overflow-hidden shadow-xs">
-          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#D3DDD8]">
-            {/* Frontier Default Column */}
-            <div className="p-7 space-y-6 bg-[#FAFCFB]">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#4B605C]">
-                  Uncalibrated Default
-                </span>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-200 text-stone-700">
-                  TOP TIER
-                </span>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-serif font-semibold text-[#0A2E2B]">
-                  Claude Fable 5.1 (Frontier Tier)
-                </h3>
-                <p className="text-xs text-[#4B605C] mt-1 leading-normal">
-                  Selected under the assumption that only the largest public leaderboard winner could safely converse with
-                  paying customers without hallucinating.
-                </p>
-              </div>
-
-              <dl className="grid grid-cols-2 gap-4 pt-4 border-t border-[#D3DDD8] text-xs">
-                <div>
-                  <dt className="text-[#4B605C]">Monthly Cost</dt>
-                  <dd className="text-2xl font-serif font-semibold text-[#0A2E2B] mt-0.5">$1,500.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Annual Expenditure</dt>
-                  <dd className="text-2xl font-serif font-semibold text-[#0A2E2B] mt-0.5">$18,000.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Cost / 1,000 Chats</dt>
-                  <dd className="text-sm font-semibold text-[#0A2E2B] mt-0.5">$30.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Measured Scenario Pass</dt>
-                  <dd className="text-sm font-semibold text-[#0A2E2B] mt-0.5">100% (8/8)</dd>
-                </div>
-              </dl>
-            </div>
-
-            {/* BenchCraft Right-Sized Model Column */}
-            <div className="p-7 space-y-6 bg-white relative">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#B87A14]">
-                  BenchCraft Right-Sized Fit
-                </span>
-                <span className="pill rec">RECOMMENDED</span>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-serif font-semibold text-[#0A2E2B]">Claude Haiku 5.5</h3>
-                <p className="text-xs text-[#4B605C] mt-1 leading-normal">
-                  Identified after 8 domain scenarios testing apparel sizing, provincial shipping to Siem Reap, and return policies in Khmer and English.
-                </p>
-              </div>
-
-              <dl className="grid grid-cols-2 gap-4 pt-4 border-t border-[#D3DDD8] text-xs">
-                <div>
-                  <dt className="text-[#4B605C]">Monthly Cost</dt>
-                  <dd className="text-2xl font-serif font-semibold text-[#8A5A0B] mt-0.5">$15.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Annual Savings</dt>
-                  <dd className="text-2xl font-serif font-semibold text-[#8A5A0B] mt-0.5">+$17,820.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Cost / 1,000 Chats</dt>
-                  <dd className="text-sm font-semibold text-[#0A2E2B] mt-0.5">$0.30</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Domain Fit Score</dt>
-                  <dd className="text-sm font-semibold text-[#1F5C55] mt-0.5">88 / 100 (Passes bar: 85)</dd>
-                </div>
-              </dl>
-            </div>
-          </div>
-        </div>
+        <ClerkSpecimenGrid />
       </section>
 
-      {/* The 3-Step Methodology from the Pitch Deck */}
+      {/* CLERK LASER DIVIDER 03 -> 04 */}
+      <ClerkLaserDivider label="04 // EMPIRICAL ARCHITECTURE" sublabel="PARETO FRONTIER" />
+
+      {/* 04 // INTERACTIVE ARCHITECTURE BENTO */}
       <section id="methodology" className="space-y-8">
-        <div className="border-b border-[#D3DDD8] pb-4">
-          <h2 className="text-2xl font-serif font-semibold text-[#0A2E2B]">
-            How BenchCraft Works
-          </h2>
-          <p className="text-xs text-[#4B605C] mt-1">
-            We learn from your business and test models on your use case, not a generic leaderboard.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-3 shadow-xs">
-            <div className="text-xs font-semibold text-[#B87A14] uppercase tracking-wider">
-              1. Describe your business
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-outlier font-semibold text-muted uppercase tracking-wider px-2.5 py-1 rounded-full glass-well border border-rule">
+                [04 // ARCHITECTURE]
+              </span>
+              <span className="pill emerald text-xs">
+                <Scale className="w-3.5 h-3.5" />
+                Interactive Pipeline
+              </span>
             </div>
-            <h3 className="text-base font-semibold text-[#0A2E2B]">Domain Grounding</h3>
-            <p className="text-xs text-[#4B605C] leading-relaxed">
-              Describe your business and attach your FAQ or policy documents. BenchCraft formulates real-world operational scenarios in memory.
+            <h2 className="text-section font-display font-bold text-ink tracking-tight">
+              Three steps from domain PDF to{' '}
+              <span className="font-editorial italic font-semibold text-accent">
+                calibrated unit economics.
+              </span>
+            </h2>
+            <p className="lead text-muted text-base leading-relaxed">
+              Public leaderboards rank abstract trivia. Interact with the workbench below to see how BenchCraft synthesizes adversarial scenarios and plots models on your 2D Pareto frontier.
             </p>
           </div>
-
-          <div className="bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-3 shadow-xs">
-            <div className="text-xs font-semibold text-[#B87A14] uppercase tracking-wider">
-              2. Compare the top 3
-            </div>
-            <h3 className="text-base font-semibold text-[#0A2E2B]">Blinded Parallel Arena</h3>
-            <p className="text-xs text-[#4B605C] leading-relaxed">
-              Candidate models respond in parallel. An objective judge scores responses at temperature 0 against strict rubrics, ranking the top 3 side by side.
-            </p>
-          </div>
-
-          <div className="bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-3 shadow-xs">
-            <div className="text-xs font-semibold text-[#B87A14] uppercase tracking-wider">
-              3. Get one recommendation
-            </div>
-            <h3 className="text-base font-semibold text-[#0A2E2B]">Right-Sizing & Savings</h3>
-            <p className="text-xs text-[#4B605C] leading-relaxed">
-              One right-sized recommendation with exact monthly and annual savings, volume stress projections, and direct cloud procurement links.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Subscription Pricing Section (From Slide 8) */}
-      <section id="pricing" className="space-y-6 pt-2 border-t border-[#D3DDD8]">
-        <div className="max-w-xl">
-          <h2 className="text-2xl font-serif font-semibold text-[#0A2E2B]">
-            Simple Founder Economics
-          </h2>
-          <p className="text-xs text-[#4B605C] mt-1">
-            One right-sized model choice saves thousands of dollars in monthly inference waste.
-          </p>
-        </div>
-
-        <div className="border border-[#D3DDD8] bg-white rounded-xl p-8 max-w-lg space-y-6 shadow-xs">
-          <div className="flex items-baseline justify-between border-b border-[#D3DDD8] pb-5">
-            <div>
-              <h3 className="text-lg font-semibold text-[#0A2E2B]">Pro Founder Plan</h3>
-              <p className="text-xs text-[#4B605C]">For founders and growing product teams</p>
-            </div>
-            <div className="text-right">
-              <span className="text-3xl font-serif font-semibold text-[#0A2E2B]">$29</span>
-              <span className="text-xs text-[#4B605C]"> / month</span>
-            </div>
-          </div>
-
-          <ul className="space-y-2.5 text-xs text-[#0A2E2B]">
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Includes 20 comprehensive arena evaluations per month
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Parallel execution across 5 candidate models per evaluation
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Objective rubric scoring with per-scenario rationale audit
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Exportable executive memos for investor or board review
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Zero Data Retention: files discarded immediately after evaluation
-            </li>
-          </ul>
-
-          <Link
-            href="/c/new"
-            className="btn-ledger w-full text-center py-3 text-sm justify-center"
-          >
-            Start Evaluating Models
+          <Link href="/how-it-works" className="btn-ledger-ghost btn-sm whitespace-nowrap">
+            Read ZDR whitepaper
           </Link>
         </div>
+
+        {/* Interactive 3-Card Glassmorphic Bento with 2D Pareto Map framed in Clerk Double-Bezel */}
+        <InteractiveArchitectureBento />
+      </section>
+
+      {/* CLERK LASER DIVIDER 04 -> 05 */}
+      <ClerkLaserDivider label="05 // EMPIRICAL MATRIX" sublabel="AUDITED LEDGER" />
+
+      {/* 05 // CASE STUDY & INTERACTIVE LEADERBOARD */}
+      <section id="model-matrix" className="space-y-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-outlier font-semibold text-muted uppercase tracking-wider px-2.5 py-1 rounded-full glass-well border border-rule">
+                [05 // EMPIRICAL MATRIX]
+              </span>
+              <span className="pill rec text-xs">
+                <BarChart2 className="w-3.5 h-3.5" />
+                Audited Ledger
+              </span>
+            </div>
+            <h2 className="text-section font-display font-bold text-ink tracking-tight">
+              Six candidate tiers tested{' '}
+              <span className="font-editorial italic font-semibold text-signal">
+                side by side.
+              </span>
+            </h2>
+            <p className="lead text-muted text-base leading-relaxed">
+              Full Nari Boutique arena matrix across 8 Khmer and English scenarios (50,000 monthly chats, quality threshold: 85/100). Filter or sort by ROI, latency, or domain fit.
+            </p>
+          </div>
+          <Link href="/case-study" className="btn-ledger-ghost btn-sm whitespace-nowrap">
+            Open full Nari audit
+          </Link>
+        </div>
+
+        <ModelMatrixTable />
+      </section>
+
+      {/* CLERK LASER DIVIDER 05 -> 06 */}
+      <ClerkLaserDivider label="06 // UNIT ECONOMICS" sublabel="50X PAYBACK" />
+
+      {/* 06 // PRICING & EXECUTIVE ARTIFACTS */}
+      <section id="pricing" className="space-y-8">
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-outlier font-semibold text-muted uppercase tracking-wider px-2.5 py-1 rounded-full glass-well border border-rule">
+              [06 // UNIT ECONOMICS]
+            </span>
+            <span className="pill emerald text-xs">
+              <Zap className="w-3.5 h-3.5" />
+              50× Instant Payback
+            </span>
+          </div>
+          <h2 className="text-section font-display font-bold text-ink tracking-tight">
+            Predictable founder economics.
+          </h2>
+          <p className="lead text-muted text-base leading-relaxed">
+            One right-sized evaluation returns 50× the monthly subscription in saved cloud inference. Zero token markups.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          {/* Pro Founder Glass Card with Clerk Double Bezel */}
+          <div className="lg:col-span-6">
+            <ClerkBentoChassis className="h-full">
+              <div className="glass-card p-7 sm:p-9 flex flex-col justify-between space-y-6 relative overflow-hidden h-full">
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-accent/15 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="space-y-6 relative z-10">
+                  <div className="flex items-baseline justify-between border-b border-rule pb-5">
+                    <div>
+                      <span className="pill emerald text-[11px] mb-2">Most Popular</span>
+                      <h3 className="text-title font-display font-bold text-ink">
+                        Pro Founder Plan
+                      </h3>
+                      <p className="text-xs text-muted mt-1">
+                        For engineering teams and technical founders
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-4xl sm:text-5xl font-editorial font-bold text-ink num">
+                        $29
+                      </span>
+                      <span className="text-xs text-muted font-normal block">/ month flat</span>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-3.5 text-sm text-ink">
+                    <li className="flex items-center gap-3">
+                      <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
+                      <span>
+                        <strong>20 full arena evaluations</strong> per month
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
+                      <span>
+                        <strong>5 candidate models</strong> executed in parallel per test
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
+                      <span>
+                        <strong>Temperature 0 rubric judge</strong> with line-by-line rationales
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
+                      <span>
+                        <strong>Exportable executive memos</strong> for board &amp; investor audits
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
+                      <span>
+                        <strong>Zero Data Retention</strong> cryptographic gateway enforcement
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+
+                <Link
+                  href="/dashboard/evaluations/new"
+                  className="btn-ledger w-full justify-center text-center mt-6 relative z-10"
+                >
+                  <span>Start evaluating models</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </ClerkBentoChassis>
+          </div>
+
+          {/* Right Column: Executive Memo Artifact Preview & ZDR Guarantee */}
+          <div className="lg:col-span-6 flex flex-col justify-between gap-6">
+            <ClerkBentoChassis className="flex-1">
+              <div className="glass-card glass-card-interactive p-6 sm:p-8 space-y-4 h-full flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-2 text-accent text-xs font-outlier font-semibold uppercase tracking-wider">
+                      <FileText className="w-4 h-4" />
+                      Board-Ready Audit Artifact
+                    </span>
+                    <span className="pill rec text-[11px]">PDF &amp; JSON Export</span>
+                  </div>
+
+                  <h3 className="text-title font-display font-bold text-ink">
+                    Procurement-ready executive memos
+                  </h3>
+                  <p className="text-sm text-muted leading-relaxed">
+                    Every completed evaluation generates an audited executive memo with scenario transcripts, rubric pass rates, and direct deployment links for AWS Bedrock, Google Vertex AI, and OpenRouter.
+                  </p>
+                </div>
+
+                {/* Cloud Procurement Provider Strip */}
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-rule">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-input glass-well text-xs font-semibold text-ink border border-rule">
+                    <ProviderLogo provider="aws" size="sm" />
+                    <span>AWS Bedrock</span>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-input glass-well text-xs font-semibold text-ink border border-rule">
+                    <ProviderLogo provider="google" size="sm" />
+                    <span>Vertex AI</span>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-input glass-well text-xs font-semibold text-ink border border-rule">
+                    <ProviderLogo provider="azure" size="sm" />
+                    <span>Azure OpenAI</span>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-input glass-well text-xs font-semibold text-ink border border-rule">
+                    <ProviderLogo provider="groq" size="sm" />
+                    <span>GroqCloud</span>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-input glass-well text-xs font-semibold text-ink border border-rule">
+                    <ProviderLogo provider="openrouter" size="sm" />
+                    <span>OpenRouter ZDR</span>
+                  </div>
+                </div>
+              </div>
+            </ClerkBentoChassis>
+
+            <ClerkBentoChassis>
+              <div className="glass-card p-6 sm:p-7 space-y-2.5">
+                <div className="font-semibold text-sm text-ink flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-accent" aria-hidden="true" />
+                  <span>Enforced Zero Data Retention (zdr: true)</span>
+                </div>
+                <p className="text-xs text-muted leading-relaxed">
+                  Uploaded policy files are parsed in volatile memory and discarded immediately after scenario synthesis. All arena requests enforce{' '}
+                  <code className="font-outlier text-accent px-1.5 py-0.5 rounded glass-well border border-rule">
+                    zdr: true
+                  </code>{' '}
+                  at the gateway.
+                </p>
+              </div>
+            </ClerkBentoChassis>
+          </div>
+        </div>
+      </section>
+
+      {/* CLERK LASER DIVIDER 06 -> 07 */}
+      <ClerkLaserDivider label="07 // GET STARTED" sublabel="3-MINUTE RUNTIME" />
+
+      {/* 07 // CLOSING GLASS WORKBENCH BANNER */}
+      <section className="relative">
+        <ClerkBentoChassis>
+          <div className="glass-card p-8 sm:p-14 text-center space-y-6 relative overflow-hidden">
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-accent/20 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="max-w-2xl mx-auto space-y-3 relative z-10">
+              <span className="pill emerald text-xs">
+                <Sparkles className="w-3.5 h-3.5" />
+                Ready in 3 minutes
+              </span>
+              <h2 className="text-section font-display font-bold text-ink tracking-tight">
+                Calibrate your model stack before your{' '}
+                <span className="font-editorial italic font-semibold text-signal">
+                  next inference invoice.
+                </span>
+              </h2>
+              <p className="text-muted text-sm sm:text-base leading-relaxed">
+                Upload your customer FAQs or system prompt, run 5 candidate models in parallel, and lock in your lowest-cost qualifying model.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 relative z-10">
+              <Link href="/dashboard/evaluations/new" className="btn-ledger">
+                <span>Run your domain evaluation</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link href="/case-study" className="btn-ledger-ghost">
+                Read the Nari case study
+              </Link>
+            </div>
+          </div>
+        </ClerkBentoChassis>
       </section>
     </div>
   );

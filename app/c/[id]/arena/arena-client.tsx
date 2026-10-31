@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { executeArenaEvaluationAction } from '@/actions/evaluations';
-import { Sparkles, CheckCircle2, Clock } from 'lucide-react';
+import { CheckCircle2, Clock, Zap, ShieldCheck } from 'lucide-react';
 
 interface ArenaClientProps {
   comparisonId: string;
@@ -21,27 +21,29 @@ export function ArenaClient({ comparisonId, candidates }: ArenaClientProps) {
   const [stage, setStage] = useState<'running' | 'judging' | 'completed'>('running');
   const [progress, setProgress] = useState(15);
   const [error, setError] = useState<string | null>(null);
+  const hasTriggeredRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
 
-    // Start arena execution action
-    executeArenaEvaluationAction(comparisonId)
-      .then(() => {
-        if (isMounted) {
-          setProgress(100);
-          setStage('completed');
+    if (!hasTriggeredRef.current) {
+      hasTriggeredRef.current = true;
+      executeArenaEvaluationAction(comparisonId)
+        .then(() => {
+          if (isMounted) {
+            setProgress(100);
+            setStage('completed');
+          }
           router.push(`/c/${comparisonId}`);
-        }
-      })
-      .catch((err) => {
-        console.error('Arena execution failed:', err);
-        if (isMounted) {
-          setError(err.message || 'Execution error');
-        }
-      });
+        })
+        .catch((err) => {
+          console.error('Arena execution failed:', err);
+          if (isMounted) {
+            setError(err.message || 'Execution error');
+          }
+        });
+    }
 
-    // Animate progress smoothly
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 92) return prev;
@@ -58,71 +60,72 @@ export function ArenaClient({ comparisonId, candidates }: ArenaClientProps) {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-xl p-6 space-y-4 text-center">
-        <h2 className="text-lg font-bold text-red-800">Arena Execution Error</h2>
-        <p className="text-xs text-red-700">{error}</p>
+      <div className="ledger-surface border-error p-8 space-y-4 text-center">
+        <h2 className="text-title font-display font-bold text-error">Arena execution error</h2>
+        <p className="text-sm text-muted">{error}</p>
         <button
+          type="button"
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-[#0A2E2B] text-white rounded-lg text-xs font-semibold hover:bg-[#1F5C55] transition"
+          className="btn-ledger btn-sm"
         >
-          Retry Arena Evaluation
+          Retry arena evaluation
         </button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 bg-white border border-[#D3DDD8] rounded-xl p-8 shadow-xs text-center">
-      <div className="space-y-2 max-w-lg mx-auto">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EDF2EF] border border-[#D3DDD8] text-xs font-semibold text-[#0A2E2B]">
-          <span className="w-2 h-2 rounded-full bg-[#B87A14] animate-ping" />
-          Step 2 of 3: Parallel Arena Testing
+    <div className="ledger-surface p-8 sm:p-10 text-center space-y-8">
+      <div className="space-y-3 max-w-lg mx-auto">
+        <div className="pill" role="status">
+          <span>Step 2 of 3: Parallel arena testing</span>
         </div>
-        <h1 className="text-3xl font-semibold text-[#0A2E2B]">
-          Testing Models in Parallel
+        <h1 className="text-3xl sm:text-4xl font-display font-semibold text-ink tracking-tight">
+          Testing models in parallel
         </h1>
-        <p className="text-xs text-[#4B605C]">
+        <p className="text-sm text-muted leading-relaxed">
           Executing your business scenarios against each candidate model and scoring with an objective rubric judge.
         </p>
       </div>
 
-      {/* Progress Bar */}
-      <div className="space-y-2 max-w-md mx-auto">
-        <div className="w-full bg-[#EDF2EF] rounded-full h-3 overflow-hidden border border-[#D3DDD8]">
+      <div className="space-y-2.5 max-w-md mx-auto">
+        <div className="w-full bg-paper rounded-pill h-3.5 overflow-hidden border border-rule p-0.5">
           <div
-            className="bg-[#1F5C55] h-3 rounded-full transition-all duration-700 ease-out"
-            style={{ width: `${progress}%` }}
+            className="bg-accent h-full rounded-pill transition-transform duration-700 ease-out origin-left"
+            style={{ transform: `scaleX(${progress / 100})` }}
           />
         </div>
-        <div className="flex justify-between text-xs text-[#4B605C] font-semibold">
-          <span>{stage === 'running' ? 'Executing candidate responses...' : 'Judging against objective rubrics...'}</span>
-          <span>{progress}%</span>
+        <div className="flex justify-between text-xs text-muted font-semibold">
+          <span className="flex items-center gap-1.5 text-ink">
+            <Zap className="w-3.5 h-3.5 text-signal" aria-hidden="true" />
+            {stage === 'running' ? 'Executing candidate responses…' : 'Judging against objective rubrics…'}
+          </span>
+          <span className="font-outlier text-accent num">{progress}%</span>
         </div>
       </div>
 
-      {/* Candidate Status Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-xl mx-auto pt-2">
         {candidates.map((cand, idx) => (
           <div
             key={cand.id}
-            className="p-3.5 rounded-lg border border-[#D3DDD8] bg-white flex items-center justify-between"
+            className="p-4 rounded-card border border-rule bg-paper flex items-center justify-between"
           >
             <div>
-              <div className="text-[11px] text-[#4B605C] font-medium">{cand.provider}</div>
-              <div className="text-sm font-semibold text-[#0A2E2B]">{cand.name || cand.modelId}</div>
+              <div className="text-xs text-muted font-semibold">{cand.provider}</div>
+              <div className="text-sm font-semibold text-ink mt-0.5">{cand.name || cand.modelId}</div>
             </div>
             {progress > (idx + 1) * 20 ? (
-              <CheckCircle2 className="w-5 h-5 text-[#1F5C55]" />
+              <CheckCircle2 className="w-5 h-5 text-accent" aria-hidden="true" />
             ) : (
-              <Clock className="w-4 h-4 text-[#B87A14] animate-spin" />
+              <Clock className="w-4 h-4 text-signal animate-spin keep-motion" aria-hidden="true" />
             )}
           </div>
         ))}
       </div>
 
-      <div className="p-3 bg-[#EDF2EF] border border-[#D3DDD8] rounded-lg text-xs text-[#0A2E2B] flex items-center justify-center gap-2 max-w-lg mx-auto">
-        <Sparkles className="w-4 h-4 text-[#B87A14]" />
-        <span>Answers are automatically anonymized and shuffled before judging to eliminate bias.</span>
+      <div className="p-3.5 bg-paper border border-rule rounded-card text-xs text-ink flex items-center justify-center gap-2 max-w-lg mx-auto">
+        <ShieldCheck className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
+        <span>Answers are anonymized and shuffled before judging to eliminate provider bias.</span>
       </div>
     </div>
   );

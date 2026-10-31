@@ -1,161 +1,160 @@
 import Link from 'next/link';
-import {
-  ArrowRight,
-  CheckCircle2,
-  TrendingDown,
-  ShieldCheck,
-  FileText,
-  Award,
-} from 'lucide-react';
+import { ProviderLogo } from '@/components/brand/provider-logo';
 
 export default function CaseStudyPage() {
   return (
-    <div className="space-y-16 py-6">
-      {/* Header */}
+    <div className="space-y-20 py-8">
+      {/* Banner Hero */}
       <section className="max-w-3xl space-y-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#D3DDD8] text-xs font-semibold text-[#0A2E2B]">
-          <span className="w-2 h-2 rounded-full bg-[#1F5C55]" />
-          Empirical Case Audit #001
-        </div>
-
-        <h1 className="text-4xl sm:text-5xl font-serif font-semibold text-[#0A2E2B] leading-[1.15] tracking-tight">
-          Nari Boutique: Slashing Monthly AI Spend by 99%
+        <h1 className="text-display font-display font-semibold text-ink">
+          Nari Boutique cuts AI spend by 99%.
         </h1>
 
-        <p className="text-base sm:text-lg text-[#4B605C] leading-relaxed">
-          How an online fashion retailer in Cambodia tested bilingual Khmer and English customer service across 4
-          candidate models and safely saved $1,485 every month.
+        <p className="lead text-muted">
+          Fifty thousand bilingual support chats a month, audited against strict return rules.
         </p>
 
-        <div className="flex items-center gap-3 pt-1">
-          <Link href="/c/new" className="btn-ledger px-6 py-3 text-sm">
-            Evaluate Your Business
-            <ArrowRight className="w-4 h-4" />
+        <div className="flex items-center gap-4 pt-2">
+          <Link href="/c/new" className="btn-ledger">
+            Evaluate your business
           </Link>
         </div>
       </section>
 
-      {/* Snapshot Cards */}
-      <section className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-        <div className="p-4 bg-white border border-[#D3DDD8] rounded-xl space-y-1">
-          <div className="text-[11px] text-[#4B605C]">Business Vertical</div>
-          <div className="font-semibold text-sm text-[#0A2E2B]">E-Commerce Fashion</div>
+      {/* Snapshot Figures */}
+      <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+        <div className="p-5 ledger-surface space-y-1">
+          <div className="text-xs text-muted">Business vertical</div>
+          <div className="font-semibold text-md text-ink">E-commerce fashion</div>
         </div>
-        <div className="p-4 bg-white border border-[#D3DDD8] rounded-xl space-y-1">
-          <div className="text-[11px] text-[#4B605C]">Monthly Inquiries</div>
-          <div className="font-semibold text-sm text-[#0A2E2B]">50,000 chats / mo</div>
+        <div className="p-5 ledger-surface space-y-1">
+          <div className="text-xs text-muted">Monthly inquiries</div>
+          <div className="font-semibold text-md text-ink num">50,000 chats / mo</div>
         </div>
-        <div className="p-4 bg-white border border-[#D3DDD8] rounded-xl space-y-1">
-          <div className="text-[11px] text-[#4B605C]">Languages</div>
-          <div className="font-semibold text-sm text-[#0A2E2B]">Khmer & English</div>
+        <div className="p-5 ledger-surface space-y-1">
+          <div className="text-xs text-muted">Languages</div>
+          <div className="font-semibold text-md text-ink">Khmer and English</div>
         </div>
-        <div className="p-4 bg-[#FBF3E2] border border-[#E7B44A] rounded-xl space-y-1">
-          <div className="text-[11px] text-[#8A5A0B] font-semibold">Net Monthly Delta</div>
-          <div className="font-serif font-bold text-base text-[#8A5A0B]">+$1,485 / mo saved</div>
+        <div className="p-5 ledger-signal space-y-1">
+          <div className="text-xs text-signal font-semibold">Net monthly delta</div>
+          <div className="font-display font-bold text-lg text-signal num">+$1,485 / mo saved</div>
         </div>
       </section>
 
-      {/* The Problem Narrative */}
-      <section className="bg-white border border-[#D3DDD8] rounded-xl p-8 sm:p-10 space-y-6 shadow-xs">
-        <div className="max-w-2xl space-y-3">
-          <h2 className="text-2xl font-serif font-semibold text-[#0A2E2B]">
-            The Founder's Dilemma
+      {/* The Problem & Solution Narrative */}
+      <section className="ledger-surface p-8 sm:p-10 space-y-8">
+        <div className="max-w-2xl space-y-4">
+          <h2 className="text-section font-display font-semibold text-ink">
+            The founder’s dilemma.
           </h2>
-          <p className="text-xs sm:text-sm text-[#4B605C] leading-relaxed">
-            Nari Boutique sells dresses, shoes, and apparel across Cambodia via Telegram channels and Facebook pages.
-            As order volume scaled to 50,000 monthly inquiries, human support staff were overwhelmed answering the same
-            repetitive questions regarding provincial shipping fees to Siem Reap, dress sizes, and return policies.
+          <p className="text-md text-muted leading-relaxed">
+            Nari Boutique sells dresses, shoes, and apparel across Cambodia via Telegram channels and Facebook pages. As order volume scaled to 50,000 monthly inquiries, support staff were overwhelmed answering repetitive questions regarding provincial shipping fees to Siem Reap, dress sizes, and return policies.
           </p>
-          <p className="text-xs sm:text-sm text-[#4B605C] leading-relaxed">
-            To automate support, the team initially defaulted to a <strong>frontier flagship model ($1,500/month)</strong>,
-            believing that only the largest model on the LMSYS leaderboard could handle Khmer script and nuanced return
-            conditions without hallucinating false order promises.
+          <p className="text-md text-muted leading-relaxed">
+            To automate support, the team initially defaulted to a <strong>frontier flagship model ($1,500/month)</strong>, assuming only the largest model on the LMSYS leaderboard could handle Khmer script and nuanced return conditions without hallucinating false order promises.
           </p>
         </div>
 
-        {/* The BenchCraft Solution */}
-        <div className="pt-6 border-t border-[#D3DDD8] space-y-4">
-          <h3 className="text-lg font-serif font-semibold text-[#0A2E2B]">
-            The BenchCraft Empirical Test
+        <div className="pt-8 border-t border-rule space-y-4">
+          <h3 className="text-title font-display font-semibold text-ink">
+            The BenchCraft empirical test
           </h3>
-          <p className="text-xs sm:text-sm text-[#4B605C] leading-relaxed">
-            Nari Boutique uploaded their 3-page <code className="text-[#0A2E2B]">Delivery-and-returns-policy.pdf</code> into
-            BenchCraft and set a target quality bar of <strong>85 out of 100</strong>.
+          <p className="text-md text-muted leading-relaxed">
+            Nari Boutique uploaded their 3-page <code className="font-outlier text-ink">Delivery-and-returns-policy.pdf</code> into BenchCraft and set a target quality bar of <strong>85 out of 100</strong>.
           </p>
 
-          <div className="p-4 rounded-lg bg-[#EDF2EF] border border-[#D3DDD8] text-xs space-y-2">
-            <div className="font-semibold text-[#0A2E2B]">8 Grounded Scenarios Formulated:</div>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[#4B605C]">
-              <li>• Provincial delivery fees to Siem Reap & Battambang</li>
-              <li>• Size exchange conditions for worn vs unworn items</li>
-              <li>• Khmer language queries on ABA Pay & Wing QR codes</li>
-              <li>• Handling out-of-stock items politely with alternatives</li>
-              <li>• Safe handover to human agent when customer is angry</li>
-              <li>• Calculation of multi-item promotional bundle discounts</li>
+          <div className="p-5 rounded-card bg-paper border border-rule text-sm space-y-3">
+            <div className="font-semibold text-ink">8 grounded scenarios formulated:</div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-muted list-disc pl-5">
+              <li>Provincial delivery fees to Siem Reap and Battambang</li>
+              <li>Size exchange conditions for worn vs unworn items</li>
+              <li>Khmer language queries on ABA Pay and Wing QR codes</li>
+              <li>Handling out-of-stock items politely with alternatives</li>
+              <li>Safe handover to a human agent when a customer is angry</li>
+              <li>Calculation of multi-item promotional bundle discounts</li>
             </ul>
           </div>
         </div>
 
-        {/* Comparison Ledger */}
-        <div className="pt-6 border-t border-[#D3DDD8] space-y-4">
-          <h3 className="text-lg font-serif font-semibold text-[#0A2E2B]">
-            Blinded Parallel Arena Findings
+        <div className="pt-8 border-t border-rule space-y-4">
+          <h3 className="text-title font-display font-semibold text-ink">
+            Blinded parallel arena findings
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-1">
-            {/* Claude Haiku */}
-            <div className="bg-[#FBF3E2] border-2 border-[#B87A14] rounded-xl p-5 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-[#0A2E2B] text-sm">Claude Haiku 5.5</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 text-sm pt-2">
+            <div className="ledger-signal p-6 space-y-3">
+              <div className="flex justify-between items-center gap-2">
+                <div className="flex items-center gap-2.5">
+                  <ProviderLogo provider="anthropic" size="sm" />
+                  <span className="font-semibold text-ink text-md">Claude Haiku 5.5</span>
+                </div>
                 <span className="pill rec">Recommended</span>
               </div>
-              <div className="font-serif text-3xl font-semibold text-[#8A5A0B]">$15.00 / mo</div>
-              <div className="text-[#4B605C]">Domain Fit Score: <strong className="text-[#0A2E2B]">88 / 100</strong></div>
-              <p className="text-[11px] text-[#0A2E2B]">
-                Passed all return policy and delivery rubrics with 100% factual accuracy in Khmer and English.
+              <div className="font-display text-3xl font-bold text-signal num">$15.00 / mo</div>
+              <div className="text-muted">Domain fit score: <strong className="text-ink num">88 / 100</strong></div>
+              <p className="text-sm text-ink leading-relaxed">
+                Passed all 8 return policy and delivery rubrics with 100% factual accuracy in Khmer and English.
               </p>
             </div>
 
-            {/* Gemini Flash */}
-            <div className="bg-white border border-[#D3DDD8] rounded-xl p-5 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-[#0A2E2B] text-sm">Gemini 2.5 Flash</span>
+            <div className="p-6 rounded-card bg-paper border border-rule space-y-3">
+              <div className="flex justify-between items-center gap-2">
+                <div className="flex items-center gap-2.5">
+                  <ProviderLogo provider="google" size="sm" />
+                  <span className="font-semibold text-ink text-md">Gemini 2.5 Flash</span>
+                </div>
                 <span className="pill">Runner-up</span>
               </div>
-              <div className="font-serif text-3xl font-semibold text-[#0A2E2B]">$112.50 / mo</div>
-              <div className="text-[#4B605C]">Domain Fit Score: <strong className="text-[#0A2E2B]">90 / 100</strong></div>
-              <p className="text-[11px] text-[#4B605C]">
-                Slightly higher fit score (+2 points), but 7.5x the monthly cost of Haiku.
+              <div className="font-display text-3xl font-semibold text-ink num">$112.50 / mo</div>
+              <div className="text-muted">Domain fit score: <strong className="text-ink num">90 / 100</strong></div>
+              <p className="text-sm text-muted leading-relaxed">
+                Slightly higher fit score (+2 points), at 7.5× the monthly cost of Haiku.
               </p>
             </div>
 
-            {/* Claude Sonnet */}
-            <div className="bg-white border border-[#D3DDD8] rounded-xl p-5 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-[#0A2E2B] text-sm">Claude Sonnet 5.5</span>
-                <span className="pill">Highest Quality</span>
+            <div className="p-6 rounded-card bg-paper border border-rule space-y-3">
+              <div className="flex justify-between items-center gap-2">
+                <div className="flex items-center gap-2.5">
+                  <ProviderLogo provider="anthropic" size="sm" />
+                  <span className="font-semibold text-ink text-md">Claude Sonnet 5.5</span>
+                </div>
+                <span className="pill">Mid-frontier</span>
               </div>
-              <div className="font-serif text-3xl font-semibold text-[#0A2E2B]">$300.00 / mo</div>
-              <div className="text-[#4B605C]">Domain Fit Score: <strong className="text-[#0A2E2B]">95 / 100</strong></div>
-              <p className="text-[11px] text-[#4B605C]">
-                20 times the cost of the first pick for only 7 more fit points. Over-provisioned for FAQ chat.
+              <div className="font-display text-3xl font-semibold text-ink num">$300.00 / mo</div>
+              <div className="text-muted">Domain fit score: <strong className="text-ink num">93 / 100</strong></div>
+              <p className="text-sm text-muted leading-relaxed">
+                20× the cost of the first pick for 5 extra fit points. Over-provisioned for FAQ chat.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-card bg-paper border border-rule space-y-3">
+              <div className="flex justify-between items-center gap-2">
+                <div className="flex items-center gap-2.5">
+                  <ProviderLogo provider="anthropic" size="sm" />
+                  <span className="font-semibold text-ink text-md">Claude Fable 5.1</span>
+                </div>
+                <span className="pill">Flagship default</span>
+              </div>
+              <div className="font-display text-3xl font-semibold text-ink num">$1,500.00 / mo</div>
+              <div className="text-muted">Domain fit score: <strong className="text-ink num">95 / 100</strong></div>
+              <p className="text-sm text-muted leading-relaxed">
+                Uncalibrated frontier default ($1,500/mo). 100× the cost of Haiku for the same 8/8 scenario pass rate.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Outcome Box */}
-        <div className="pt-6 border-t border-[#D3DDD8] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="pt-8 border-t border-rule flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="font-serif text-2xl font-semibold text-[#8A5A0B]">
-              Total Annual Savings: $17,820.00
+            <div className="font-display text-2xl font-bold text-signal num">
+              Total annual savings: $17,820.00
             </div>
-            <p className="text-xs text-[#4B605C] mt-0.5">
+            <p className="text-sm text-muted mt-1 num">
               Zero drop in customer satisfaction, 420ms average response latency.
             </p>
           </div>
-          <Link href="/c/new" className="btn-ledger px-5 py-2.5 text-xs whitespace-nowrap">
-            Run Test on Your Documents
+          <Link href="/c/new" className="btn-ledger">
+            Run test on your documents
           </Link>
         </div>
       </section>

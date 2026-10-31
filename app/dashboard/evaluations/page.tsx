@@ -7,12 +7,10 @@ import { deleteEvaluationAction } from '@/actions/evaluations';
 import {
   Plus,
   Trash2,
-  ArrowRight,
-  ExternalLink,
   Printer,
   Layers,
-  Search,
 } from 'lucide-react';
+import { ProviderLogo } from '@/components/brand/provider-logo';
 
 export default async function EvaluationsLedgerPage() {
   const userId = await requireUser();
@@ -49,124 +47,121 @@ export default async function EvaluationsLedgerPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#D3DDD8] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-5">
         <div>
-          <h1 className="text-3xl font-serif font-semibold text-[#0A2E2B]">
-            Evaluations Ledger
+          <h1 className="text-3xl font-display font-semibold text-ink">
+            Evaluations ledger
           </h1>
-          <p className="text-xs sm:text-sm text-[#4B605C] mt-0.5">
+          <p className="text-sm text-muted mt-0.5">
             Complete historical registry of domain benchmarks, candidate model scoring, and right-sized decisions.
           </p>
         </div>
 
-        <Link href="/c/new" className="btn-ledger text-xs sm:text-sm px-4 py-2">
-          <Plus className="w-4 h-4" /> New Evaluation
+        <Link href="/dashboard/evaluations/new" className="btn-ledger btn-sm">
+          <Plus className="w-4 h-4" aria-hidden="true" /> New evaluation
         </Link>
       </div>
 
-      {/* Evaluations Table */}
       {userComparisons.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[#D3DDD8] p-12 text-center space-y-4 max-w-lg mx-auto shadow-xs">
-          <div className="w-12 h-12 rounded-full bg-[#EDF2EF] text-[#0A2E2B] flex items-center justify-center mx-auto">
-            <Layers className="w-6 h-6" />
+        <div className="ledger-surface p-12 text-center space-y-4 max-w-lg mx-auto">
+          <div className="w-12 h-12 rounded-pill bg-paper text-ink flex items-center justify-center mx-auto">
+            <Layers className="w-6 h-6" aria-hidden="true" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-lg font-serif font-semibold text-[#0A2E2B]">No evaluations recorded</h3>
-            <p className="text-xs text-[#4B605C]">
+            <h2 className="text-title font-display font-semibold text-ink">No evaluations recorded</h2>
+            <p className="text-sm text-muted">
               Create an evaluation to test models against your business documentation.
             </p>
           </div>
-          <Link href="/c/new" className="btn-ledger text-xs sm:text-sm">
-            Start Evaluation
+          <Link href="/dashboard/evaluations/new" className="btn-ledger btn-sm">
+            Start evaluation
           </Link>
         </div>
       ) : (
-        <div className="bg-white border border-[#D3DDD8] rounded-xl overflow-hidden shadow-xs">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAFCFB] border-b border-[#D3DDD8] text-[#4B605C]">
+        <div className="ledger-surface overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-paper border-b border-rule text-muted">
               <tr>
-                <th className="p-4 font-semibold">Evaluation Name</th>
-                <th className="p-4 font-semibold">Date</th>
-                <th className="p-4 font-semibold">Volume</th>
-                <th className="p-4 font-semibold">Status</th>
-                <th className="p-4 font-semibold">Right-Sized Model</th>
-                <th className="p-4 font-semibold">Monthly Cost</th>
-                <th className="p-4 font-semibold text-right">Actions</th>
+                <th className="p-4 font-semibold whitespace-nowrap">Evaluation name</th>
+                <th className="p-4 font-semibold whitespace-nowrap">Date</th>
+                <th className="p-4 font-semibold whitespace-nowrap">Volume</th>
+                <th className="p-4 font-semibold whitespace-nowrap">Status</th>
+                <th className="p-4 font-semibold whitespace-nowrap">Right-sized model</th>
+                <th className="p-4 font-semibold whitespace-nowrap">Monthly cost</th>
+                <th className="p-4 font-semibold text-right whitespace-nowrap">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#D3DDD8]">
+            <tbody className="divide-y divide-rule">
               {userComparisons.map((comp) => {
                 const rec = recByComp.get(comp.id);
                 const getDestination = () => {
-                  if (comp.status === 'done') return `/c/${comp.id}`;
-                  if (comp.status === 'analyzed') return `/c/${comp.id}/review`;
-                  if (comp.status === 'testing' || comp.status === 'judged') return `/c/${comp.id}/arena`;
-                  return `/c/${comp.id}`;
+                  if (comp.status === 'done') return `/dashboard/evaluations/${comp.id}`;
+                  if (comp.status === 'analyzed') return `/dashboard/evaluations/${comp.id}/review`;
+                  if (comp.status === 'testing' || comp.status === 'judged') return `/dashboard/evaluations/${comp.id}/arena`;
+                  return `/dashboard/evaluations/${comp.id}`;
                 };
 
                 return (
-                  <tr key={comp.id} className="hover:bg-[#FAFCFB] transition">
+                  <tr key={comp.id} className="hover:bg-paper transition-colors">
                     <td className="p-4">
                       <Link
                         href={getDestination()}
-                        className="font-semibold text-[#0A2E2B] hover:text-[#1F5C55] block max-w-xs truncate"
+                        className="font-semibold text-ink hover:text-accent block max-w-xs truncate"
                       >
                         {comp.title}
                       </Link>
-                      <span className="text-[11px] text-[#4B605C]">
-                        {comp.domainProfile?.industry || 'Domain Evaluation'}
+                      <span className="text-xs text-muted">
+                        {comp.domainProfile?.industry || 'Domain evaluation'}
                       </span>
                     </td>
-                    <td className="p-4 text-[#4B605C] whitespace-nowrap">
+                    <td className="p-4 text-muted whitespace-nowrap num">
                       {new Date(comp.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="p-4 text-[#4B605C] whitespace-nowrap">
+                    <td className="p-4 text-muted whitespace-nowrap num">
                       {comp.conversationsPerMonth.toLocaleString()} / mo
                     </td>
                     <td className="p-4 whitespace-nowrap">
                       <span
-                        className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold capitalize ${
-                          comp.status === 'done'
-                            ? 'bg-[#EDF2EF] text-[#1F5C55] border border-[#D3DDD8]'
-                            : comp.status === 'testing'
-                            ? 'bg-[#FBF3E2] text-[#8A5A0B] border border-[#E7B44A]'
-                            : 'bg-stone-100 text-stone-600'
+                        className={`pill ${
+                          comp.status === 'testing' ? 'rec' : ''
                         }`}
                       >
                         {comp.status === 'done' ? 'Completed' : comp.status}
                       </span>
                     </td>
-                    <td className="p-4 text-[#0A2E2B] whitespace-nowrap">
+                    <td className="p-4 text-ink whitespace-nowrap">
                       {rec ? (
-                        <div>
-                          <div className="font-semibold">{rec.name || rec.modelId}</div>
-                          <div className="text-[11px] text-[#4B605C]">
-                            Fit: {Math.round((rec.avgScore || 0) * 10)}/100
+                        <div className="flex items-center gap-2.5">
+                          <ProviderLogo provider={rec.provider || rec.name} size="sm" />
+                          <div>
+                            <div className="font-semibold">{rec.name || rec.modelId}</div>
+                            <div className="text-xs text-muted num">
+                              Fit: {Math.round((rec.avgScore || 0) * 10)} / 100
+                            </div>
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[#4B605C] italic">—</span>
+                        <span className="text-muted">Pending</span>
                       )}
                     </td>
-                    <td className="p-4 text-[#0A2E2B] font-semibold whitespace-nowrap">
-                      {rec?.monthlyCostUsd ? `$${rec.monthlyCostUsd.toLocaleString()}/mo` : '—'}
+                    <td className="p-4 text-ink font-semibold whitespace-nowrap num">
+                      {rec?.monthlyCostUsd ? `$${rec.monthlyCostUsd.toLocaleString()}/mo` : 'Pending'}
                     </td>
                     <td className="p-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={getDestination()}
-                          className="px-2.5 py-1 text-xs font-semibold text-[#0A2E2B] bg-[#EDF2EF] hover:bg-[#D3DDD8] rounded transition"
+                          className="btn-ledger-ghost btn-sm"
                         >
                           View
                         </Link>
                         {comp.status === 'done' && (
                           <Link
-                            href={`/c/${comp.id}/report`}
-                            className="p-1 text-[#4B605C] hover:text-[#0A2E2B] transition"
-                            title="Export PDF Memo"
+                            href={`/dashboard/evaluations/${comp.id}/report`}
+                            className="p-2 text-muted hover:text-ink transition-colors"
+                            title="Export PDF memo"
                           >
-                            <Printer className="w-3.5 h-3.5" />
+                            <Printer className="w-4 h-4" aria-hidden="true" />
                           </Link>
                         )}
                         <form
@@ -177,10 +172,10 @@ export default async function EvaluationsLedgerPage() {
                         >
                           <button
                             type="submit"
-                            className="p-1 text-[#4B605C] hover:text-red-600 transition cursor-pointer"
+                            className="p-2 text-muted hover:text-error transition-colors cursor-pointer"
                             title="Delete"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" aria-hidden="true" />
                           </button>
                         </form>
                       </div>

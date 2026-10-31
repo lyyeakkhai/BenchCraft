@@ -4,7 +4,8 @@ import { comparisons } from '@/drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { DashboardSidebar } from '@/components/dashboard/sidebar';
 import Link from 'next/link';
-import { ShieldCheck, Sparkles, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Plus, Terminal } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
 
 export default async function DashboardLayout({
   children,
@@ -13,7 +14,6 @@ export default async function DashboardLayout({
 }) {
   const userId = await requireUser();
 
-  // Fetch count of evaluations for usage meter
   const userComparisons = await db
     .select({ id: comparisons.id })
     .from(comparisons)
@@ -23,40 +23,49 @@ export default async function DashboardLayout({
   const maxLimit = 20;
 
   return (
-    <div className="flex flex-col md:flex-row -mx-4 sm:-mx-6 -my-8 min-h-[calc(100vh-3.5rem)]">
-      {/* Sidebar for Desktop */}
-      <div className="hidden md:block">
+    <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden bg-paper text-ink relative">
+      {/* Soft Ambient Top Glow Beam */}
+      <div className="fixed inset-x-0 top-0 h-[360px] glow-beam pointer-events-none z-0 opacity-40 dark:opacity-60" />
+
+      <div className="hidden md:block h-screen flex-shrink-0 print:hidden relative z-20">
         <DashboardSidebar totalUsed={totalUsed} maxLimit={maxLimit} />
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#EDF2EF]">
-        {/* Dashboard Sub-Header */}
-        <div className="bg-white border-b border-[#D3DDD8] px-6 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-[#4B605C]">
-            <Link href="/dashboard" className="font-semibold text-[#0A2E2B] hover:underline">
-              Dashboard
-            </Link>
-            <span>/</span>
-            <span>Right-Sizing Control Plane</span>
-          </div>
-
-          <div className="flex items-center gap-3 text-xs">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EDF2EF] border border-[#D3DDD8] text-[11px] font-semibold text-[#1F5C55]">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              Zero Data Retention Enforced
-            </span>
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative z-10">
+        <header className="h-14 bg-paper-2/90 backdrop-blur-md border-b border-rule px-6 flex items-center justify-between gap-4 flex-shrink-0 z-20 print:hidden">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm">
             <Link
-              href="/c/new"
-              className="btn-ledger text-xs py-1 px-3 rounded hidden sm:inline-flex"
+              href="/dashboard"
+              className="font-medium text-ink hover:text-accent transition-colors whitespace-nowrap"
             >
-              + Evaluate
+              Workspace
+            </Link>
+            <span className="text-muted/50" aria-hidden="true">/</span>
+            <span className="font-semibold text-ink whitespace-nowrap">
+              Production Arena
+            </span>
+          </nav>
+
+          <div className="flex items-center gap-3 text-sm">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill glass-well text-xs font-medium text-accent whitespace-nowrap border border-accent/25">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse-dot" />
+              <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>ZDR Active</span>
+            </span>
+            <ThemeToggle />
+            <Link
+              href="/dashboard/evaluations/new"
+              className="btn-ledger btn-sm hidden sm:inline-flex"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>New Evaluation</span>
             </Link>
           </div>
-        </div>
+        </header>
 
-        {/* Child Pages Container */}
-        <main className="p-4 sm:p-8 flex-1">{children}</main>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+          <div className="max-w-6xl mx-auto space-y-8 pb-12">{children}</div>
+        </div>
       </div>
     </div>
   );
