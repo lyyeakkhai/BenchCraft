@@ -21,7 +21,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // 1. Read stored preference or system preference
     const stored = localStorage.getItem('benchcraft-theme') as Theme | null;
     const initial = stored || 'system';
-    setThemeState(initial);
+    queueMicrotask(() => {
+      setThemeState(initial);
+    });
 
     const applyTheme = (t: Theme) => {
       const root = document.documentElement;
