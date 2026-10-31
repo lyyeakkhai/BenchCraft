@@ -1,9 +1,7 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Newsreader, Hanken_Grotesk } from 'next/font/google';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Navbar } from '@/components/navigation/navbar';
+import { AppShellProvider } from '@/components/navigation/app-shell-provider';
 import './globals.css';
 
 const newsreader = Newsreader({
@@ -63,30 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html lang="en" className={`${newsreader.variable} ${hanken.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col bg-[#EDF2EF] text-[#0A2E2B] font-sans selection:bg-[#0A2E2B] selection:text-white">
-          <Navbar />
-
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8">{children}</main>
-
-          <footer className="border-t border-[#D3DDD8] bg-white py-6 text-xs text-[#4B605C]">
-            <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <Image
-                  src="/benchcraft-lockup-light.svg"
-                  alt="BenchCraft"
-                  width={110}
-                  height={24}
-                  className="h-5 w-auto opacity-80"
-                />
-                <span className="text-[#A9BDB7]">|</span>
-                <span>Empirical model selection for technical founders</span>
-              </div>
-              <div className="flex items-center gap-6 font-mono text-[11px] text-[#4B605C]">
-                <span>ZERO DATA RETENTION</span>
-                <span>EMPIRICAL ARENA</span>
-                <span>© 2026 BENCHCRAFT</span>
-              </div>
-            </div>
-          </footer>
+          <AppShellProvider>{children}</AppShellProvider>
         </body>
       </html>
     </ClerkProvider>

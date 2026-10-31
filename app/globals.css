@@ -15,6 +15,10 @@
     --signal-dark: #8A5A0B;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: var(--bg);
     color: var(--ink);
@@ -46,6 +50,39 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #4B605C;
   }
+}
+
+/* Glassmorphism & Modern Silicon Valley Finishes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(211, 221, 216, 0.9);
+}
+
+.glass-panel-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -8px rgba(10, 46, 43, 0.08);
+  border-color: rgba(184, 122, 20, 0.4);
+}
+
+/* Animated subtle mesh backgrounds */
+.mesh-glow {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(31, 92, 85, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(184, 122, 20, 0.05) 0px, transparent 50%);
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.96); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
 }
 
 /* Stepper styles from prototype */
@@ -126,12 +163,19 @@
   font-weight: 600;
   background: #0A2E2B;
   color: #ffffff;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+  box-shadow: 0 1px 2px rgba(10, 46, 43, 0.08);
 }
 .btn-ledger:hover {
   background: #1F5C55;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 46, 43, 0.15);
 }
+.btn-ledger:active {
+  transform: translateY(0);
+}
+
 .btn-ledger-ghost {
   display: inline-flex;
   align-items: center;
@@ -144,11 +188,15 @@
   background: #ffffff;
   color: #0A2E2B;
   border: 1.5px solid #0A2E2B;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
 }
 .btn-ledger-ghost:hover {
   background: #EDF2EF;
+  transform: translateY(-1px);
+}
+.btn-ledger-ghost:active {
+  transform: translateY(0);
 }
 
 /* Card primitives */

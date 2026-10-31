@@ -59,8 +59,22 @@ export function DashboardSidebar({ totalUsed = 1, maxLimit = 20 }: SidebarProps)
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-[#D3DDD8] flex flex-col justify-between min-h-[calc(100vh-3.5rem)] py-5 px-4 flex-shrink-0">
-      <div className="space-y-6">
+    <aside className="w-64 bg-white border-r border-[#D3DDD8] flex flex-col justify-between h-screen py-5 px-4 flex-shrink-0 z-20">
+      <div className="space-y-5">
+        {/* Brand Header */}
+        <div className="px-2 pt-1 flex items-center justify-between">
+          <Link href="/" className="hover:opacity-90 transition-opacity flex items-center gap-2" title="Back to Homepage">
+            <Image
+              src="/benchcraft-lockup-light.svg"
+              alt="BenchCraft"
+              width={130}
+              height={30}
+              className="h-7 w-auto"
+              priority
+            />
+          </Link>
+        </div>
+
         {/* Workspace Switcher / Badge */}
         <div className="p-3 bg-[#EDF2EF] rounded-xl border border-[#D3DDD8] space-y-1">
           <div className="flex items-center justify-between text-[11px] font-semibold text-[#4B605C]">

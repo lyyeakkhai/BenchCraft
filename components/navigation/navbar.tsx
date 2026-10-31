@@ -62,12 +62,12 @@ export function Navbar() {
         <div className="hidden sm:flex items-center gap-3">
           <Show when="signed-out">
             <div className="flex items-center gap-2">
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
                 <button className="text-xs font-semibold text-[#4B605C] hover:text-[#0A2E2B] px-3 py-1.5 transition-colors cursor-pointer">
                   Sign In
                 </button>
               </SignInButton>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
                 <button className="text-xs font-semibold bg-[#0A2E2B] text-white px-3.5 py-1.5 rounded-lg hover:bg-[#1F5C55] transition cursor-pointer shadow-xs">
                   Get Started
                 </button>
@@ -152,7 +152,7 @@ export function Navbar() {
 
           <div className="pt-3 border-t border-[#D3DDD8] flex flex-col gap-2">
             <Show when="signed-out">
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center py-2 text-xs font-semibold text-[#0A2E2B] border border-[#D3DDD8] rounded-lg hover:bg-[#EDF2EF]"
@@ -160,7 +160,7 @@ export function Navbar() {
                   Sign In
                 </button>
               </SignInButton>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center py-2 text-xs font-semibold text-white bg-[#0A2E2B] rounded-lg hover:bg-[#1F5C55]"

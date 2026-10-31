@@ -23,21 +23,21 @@ export default async function DashboardLayout({
   const maxLimit = 20;
 
   return (
-    <div className="flex flex-col md:flex-row -mx-4 sm:-mx-6 -my-8 min-h-[calc(100vh-3.5rem)]">
+    <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-[#EDF2EF]">
       {/* Sidebar for Desktop */}
-      <div className="hidden md:block">
+      <div className="hidden md:block h-screen flex-shrink-0">
         <DashboardSidebar totalUsed={totalUsed} maxLimit={maxLimit} />
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#EDF2EF]">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-[#EDF2EF]">
         {/* Dashboard Sub-Header */}
-        <div className="bg-white border-b border-[#D3DDD8] px-6 py-3 flex items-center justify-between gap-4">
+        <header className="h-14 bg-white border-b border-[#D3DDD8] px-6 flex items-center justify-between gap-4 flex-shrink-0 z-10">
           <div className="flex items-center gap-2 text-xs text-[#4B605C]">
-            <Link href="/dashboard" className="font-semibold text-[#0A2E2B] hover:underline">
+            <Link href="/dashboard" className="font-semibold text-[#0A2E2B] hover:text-[#1F5C55] transition flex items-center gap-1.5">
               Dashboard
             </Link>
-            <span>/</span>
+            <span className="text-[#A9BDB7]">/</span>
             <span>Right-Sizing Control Plane</span>
           </div>
 
@@ -48,15 +48,17 @@ export default async function DashboardLayout({
             </span>
             <Link
               href="/c/new"
-              className="btn-ledger text-xs py-1 px-3 rounded hidden sm:inline-flex"
+              className="btn-ledger text-xs py-1.5 px-3 rounded hidden sm:inline-flex"
             >
               + Evaluate
             </Link>
           </div>
-        </div>
+        </header>
 
         {/* Child Pages Container */}
-        <main className="p-4 sm:p-8 flex-1">{children}</main>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+          <div className="max-w-6xl mx-auto space-y-8">{children}</div>
+        </div>
       </div>
     </div>
   );
