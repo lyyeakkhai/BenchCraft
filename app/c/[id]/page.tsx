@@ -1,20 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { comparisons, candidates, scenarios, arenaAnswers, catalogModels } from '@/drizzle/schema';
 import { requireUser } from '@/lib/auth';
-import {
-  Award,
-  TrendingDown,
-  ExternalLink,
-  Printer,
-  ChevronDown,
-  CheckCircle2,
-  DollarSign,
-  ShieldCheck,
-  Zap,
-} from 'lucide-react';
+import { Stepper } from '@/components/brand/stepper';
+import { ExternalLink, Printer, CheckCircle2, ChevronDown } from 'lucide-react';
 
 export default async function EvaluationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -27,7 +18,6 @@ export default async function EvaluationDetailPage({ params }: { params: Promise
 
   if (!comp) notFound();
 
-  // Fetch candidates sorted by rank
   const compCandidates = await db
     .select({
       id: candidates.id,
@@ -38,6 +28,8 @@ export default async function EvaluationDetailPage({ params }: { params: Promise
       avgScore: candidates.avgScore,
       passRate: candidates.passRate,
       monthlyCostUsd: candidates.monthlyCostUsd,
+      inputPriceSnapshot: candidates.inputPriceSnapshot,
+      outputPriceSnapshot: candidates.outputPriceSnapshot,
       rank: candidates.rank,
       isRecommended: candidates.isRecommended,
       reasons: candidates.reasons,
@@ -70,223 +62,153 @@ export default async function EvaluationDetailPage({ params }: { params: Promise
     compCandidates.find((c) => c.tier === 'top') ||
     [...compCandidates].sort((a, b) => (b.monthlyCostUsd || 0) - (a.monthlyCostUsd || 0))[0];
 
+  const runnerUp = top3.find((c) => c.id !== recommended?.id) || top3[1];
+
   const savingMonthly = Math.max(
     0,
     Number(((reference?.monthlyCostUsd || 0) - (recommended?.monthlyCostUsd || 0)).toFixed(2))
   );
   const savingYearly = Number((savingMonthly * 12).toFixed(2));
-  const savingPct =
-    reference && reference.monthlyCostUsd && reference.monthlyCostUsd > 0
-      ? Math.round(((reference.monthlyCostUsd - (recommended?.monthlyCostUsd || 0)) / reference.monthlyCostUsd) * 100)
-      : 0;
+  const savingVsRunnerUp = Math.max(
+    0,
+    Number(((runnerUp?.monthlyCostUsd || 0) - (recommended?.monthlyCostUsd || 0)).toFixed(2))
+  );
+
+  const rawBar = comp.domainProfile?.qualityBar || 8.0;
+  const barThreshold = Math.round(rawBar * 10);
+  const maxCost = Math.max(...compCandidates.map((c) => c.monthlyCostUsd || 1), 1);
 
   return (
-    <div className="space-y-12 py-2">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#D97706]">Evaluation Results</span>
-            <span className="text-gray-300">•</span>
-            <span className="text-xs text-gray-500">
-              {comp.conversationsPerMonth.toLocaleString()} convs/mo ({comp.conversationLength} turns)
-            </span>
-          </div>
-          <h1 className="text-3xl font-extrabold text-[#0C3838]">{comp.title}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{comp.domainProfile?.industry || 'Domain Evaluation'}</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Link
-            href={`/c/${id}/report`}
-            className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 rounded-xl text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 transition shadow-sm"
-          >
-            <Printer className="w-4 h-4" /> Export Report (PDF)
-          </Link>
-          <Link
-            href="/c/new"
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0C3838] text-white rounded-xl text-xs font-semibold hover:bg-[#164E4E] transition shadow-sm"
-          >
-            + New Comparison
-          </Link>
-        </div>
+    <div className="space-y-8">
+      {/* Stepper Header (Screens 2 & 3 state) */}
+      <div className="rounded-xl overflow-hidden border border-[#D3DDD8] shadow-xs">
+        <Stepper currentStep={3} businessTitle={comp.title} />
       </div>
 
-      {/* STORYBOARD SCREEN 3: DECIDE & SAVINGS HERO */}
-      <section className="bg-gradient-to-br from-[#0C3838] to-[#164E4E] text-white rounded-2xl p-8 shadow-md space-y-6">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-teal-700/50 pb-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-gray-900 text-xs font-bold uppercase tracking-wide">
-              <Award className="w-3.5 h-3.5" /> BenchCraft Official Recommendation
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-              {recommended?.name || recommended?.modelId}
-            </h2>
-            <p className="text-teal-100 text-sm max-w-xl">
-              Right-sized for your business. Passed your domain scenarios with high fidelity while eliminating
-              unnecessary compute overhead.
-            </p>
-          </div>
-
-          {/* Savings Box */}
-          {savingMonthly > 0 && (
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-center lg:text-right min-w-[240px]">
-              <span className="text-xs font-semibold text-teal-200 uppercase tracking-wider block">
-                Net Monthly Savings
-              </span>
-              <div className="text-4xl font-black text-amber-300 mt-1">
-                ${savingMonthly.toLocaleString()} <span className="text-sm font-normal text-white">/ mo</span>
-              </div>
-              <div className="text-xs text-teal-100 mt-1 font-medium">
-                ${savingYearly.toLocaleString()} saved per year ({savingPct}% less than {reference?.name})
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Reasons & Where to Buy */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-          {/* Reasons */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-teal-200">
-              Why this model is right-sized for you:
-            </h3>
-            <ul className="space-y-2 text-sm text-teal-50">
-              {(recommended?.reasons || [
-                `Met your quality bar of ${(comp.domainProfile?.qualityBar || 8.0).toFixed(1)}/10`,
-                'Delivers fast response latency for customer interactions',
-                'Highest quality score per dollar among all tested candidates',
-              ]).map((reason: string, idx: number) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                  <span>{reason}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Where to Buy */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-teal-200">
-              Where to buy this model:
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {(recommended?.whereToBuy || [
-                { name: 'Google Cloud Vertex AI', url: 'https://cloud.google.com/vertex-ai' },
-                { name: 'OpenRouter', url: 'https://openrouter.ai' },
-              ]).map((shop: { name: string; url: string }, idx: number) => (
-                <a
-                  key={idx}
-                  href={shop.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-gray-900 text-xs font-semibold hover:bg-gray-100 transition shadow-sm"
-                >
-                  {shop.name}
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-500" />
-                </a>
-              ))}
-            </div>
-            <p className="text-[11px] text-teal-200">
-              Official list pricing verified. Deploy directly via cloud providers or unified API routers.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* STORYBOARD SCREEN 2: TOP 3 SIDE-BY-SIDE COMPARISON */}
-      <section className="space-y-6">
+      {/* ========================================================================= */}
+      {/* SCREEN 2: COMPARE TOP 3                                                  */}
+      {/* ========================================================================= */}
+      <section className="space-y-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#0C3838]">Top 3 Model Comparison</h2>
-          <p className="text-sm text-gray-500">
-            Side-by-side benchmark across measured quality, fit score, and total monthly operating expenditure.
-          </p>
+          <h1 className="text-3xl font-semibold tracking-[-0.01em] text-[#0A2E2B]">
+            We found 3 models that fit {comp.title}
+          </h1>
+          {/* Characteristics Chips */}
+          <div className="flex flex-wrap items-center gap-2 mt-3 text-xs">
+            <span className="bg-white border border-[#D3DDD8] rounded-full px-3 py-1 text-[#0A2E2B]">
+              {comp.domainProfile?.taskCategory?.replace('_', ' ') || 'Customer support chat'}
+            </span>
+            <span className="bg-white border border-[#D3DDD8] rounded-full px-3 py-1 text-[#0A2E2B]">
+              {(comp.domainProfile?.languages || ['Khmer', 'English']).join(' and ')}
+            </span>
+            <span className="bg-white border border-[#D3DDD8] rounded-full px-3 py-1 text-[#0A2E2B]">
+              {comp.conversationsPerMonth.toLocaleString()} conversations a month
+            </span>
+            <span className="bg-white border border-[#D3DDD8] rounded-full px-3 py-1 text-[#0A2E2B]">
+              {compScenarios.length} scenarios tested
+            </span>
+            <span className="bg-white border border-[#D3DDD8] rounded-full px-3 py-1 text-[#0A2E2B]">
+              Target bar: {barThreshold}
+            </span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {top3.map((cand) => {
+        {/* 3 Model Cards Side-by-Side */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+          {top3.map((cand, idx) => {
+            const isRec = cand.id === recommended?.id;
             const fitScore = Math.round((cand.avgScore || 0) * 10);
-            const isWinner = cand.isRecommended;
+            const convKCost = cand.monthlyCostUsd
+              ? ((cand.monthlyCostUsd / comp.conversationsPerMonth) * 1000).toFixed(2)
+              : '0.00';
 
             return (
               <div
                 key={cand.id}
-                className={`bg-white rounded-2xl border p-6 flex flex-col justify-between transition relative shadow-sm ${
-                  isWinner
-                    ? 'border-2 border-[#0C3838] ring-4 ring-teal-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                className={`bg-white rounded-xl p-5 flex flex-col justify-between relative transition shadow-xs ${
+                  isRec
+                    ? 'border-2 border-[#B87A14]'
+                    : 'border border-[#D3DDD8]'
                 }`}
+                style={{ minHeight: '340px' }}
               >
-                {isWinner && (
-                  <div className="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-[#0C3838] text-white text-xs font-bold shadow-sm flex items-center gap-1">
-                    <Award className="w-3.5 h-3.5 text-amber-400" /> Recommended Fit
-                  </div>
-                )}
-
-                <div className="space-y-4">
-                  {/* Model Header */}
-                  <div className="flex items-start justify-between gap-2 pt-1">
-                    <div>
-                      <span className="text-xs text-gray-500 font-medium">{cand.provider}</span>
-                      <h3 className="text-xl font-bold text-gray-900">{cand.name || cand.modelId}</h3>
-                    </div>
-                    <span
-                      className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
-                        cand.tier === 'top'
-                          ? 'bg-purple-100 text-purple-800'
-                          : cand.tier === 'mid'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-emerald-100 text-emerald-800'
-                      }`}
-                    >
-                      {cand.tier}
-                    </span>
+                <div>
+                  {/* Badge */}
+                  <div>
+                    {isRec ? (
+                      <span className="pill rec">Recommended</span>
+                    ) : idx === 1 ? (
+                      <span className="pill">Runner-up</span>
+                    ) : (
+                      <span className="pill">Highest quality</span>
+                    )}
                   </div>
 
-                  {/* Fit Score & Pass Rate */}
-                  <div className="grid grid-cols-2 gap-3 py-3 border-y border-gray-100">
-                    <div>
-                      <div className="text-xs text-gray-500 font-medium">Domain Fit</div>
-                      <div className="text-2xl font-black text-[#0C3838]">{fitScore} / 100</div>
+                  {/* Model Name & Provider */}
+                  <div className="font-serif font-semibold text-2xl text-[#0A2E2B] leading-tight mt-3">
+                    {cand.name || cand.modelId}
+                  </div>
+                  <div className="text-xs text-[#4B605C] mt-0.5">{cand.provider}</div>
+
+                  {/* Fit for your business */}
+                  <div className="mt-4">
+                    <div className="flex justify-between items-baseline text-xs text-[#4B605C]">
+                      <span>Fit for your business</span>
+                      <span>Your bar: {barThreshold}</span>
                     </div>
-                    <div>
-                      <div className="text-xs text-gray-500 font-medium">Scenario Pass Rate</div>
-                      <div className="text-2xl font-black text-gray-900">
-                        {Math.round((cand.passRate || 0) * 100)}%
-                      </div>
+
+                    <div className="flex items-baseline gap-1 mt-0.5">
+                      <span className="font-serif font-semibold text-3xl text-[#0A2E2B] leading-none">
+                        {fitScore}
+                      </span>
+                      <span className="text-xs text-[#4B605C]">out of 100</span>
+                    </div>
+
+                    {/* Quality Progress Bar with Needle Marker */}
+                    <div className="relative h-2 rounded-full bg-[#D3DDD8] mt-2 overflow-visible">
+                      <div
+                        className="h-2 rounded-full bg-[#1F5C55]"
+                        style={{ width: `${Math.min(100, fitScore)}%` }}
+                      />
+                      <div
+                        className="absolute -top-1 w-[2px] h-4 bg-[#0A2E2B]"
+                        style={{ left: `${barThreshold}%` }}
+                        title={`Your Quality Bar: ${barThreshold}`}
+                      />
                     </div>
                   </div>
 
                   {/* Monthly Cost */}
-                  <div className="space-y-1">
-                    <div className="text-xs text-gray-500 font-medium">Estimated Monthly Cost</div>
-                    <div className="text-3xl font-black text-gray-900">
-                      ${cand.monthlyCostUsd?.toLocaleString()}{' '}
-                      <span className="text-xs font-normal text-gray-500">/ mo</span>
+                  <div className="mt-4">
+                    <div className="flex items-baseline gap-1.5">
+                      <span
+                        className={`font-serif font-semibold text-3xl leading-none ${
+                          isRec ? 'text-[#8A5A0B]' : 'text-[#0A2E2B]'
+                        }`}
+                      >
+                        ${cand.monthlyCostUsd?.toLocaleString() || '0'}
+                      </span>
+                      <span className="text-xs text-[#4B605C]">per month</span>
                     </div>
-                    <div className="text-xs text-gray-400">
-                      ~${cand.monthlyCostUsd ? (cand.monthlyCostUsd / (comp.conversationsPerMonth / 1000)).toFixed(2) : 0}{' '}
-                      per 1k conversations
+                    <div className="text-xs text-[#4B605C] mt-1">
+                      ${convKCost} per 1,000 conversations
+                    </div>
+                    <div className="text-xs text-[#4B605C] mt-0.5">
+                      Per 1M tokens: in ${(cand.inputPriceSnapshot || 0.1).toFixed(2)}, out $
+                      {(cand.outputPriceSnapshot || 0.5).toFixed(2)}
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-gray-100 mt-4 space-y-2">
-                  <div className="text-xs text-gray-500 font-medium">Where to deploy:</div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {(cand.whereToBuy || []).slice(0, 2).map((shop: { name: string; url: string }, i: number) => (
-                      <a
-                        key={i}
-                        href={shop.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[11px] text-[#0C3838] bg-teal-50 hover:bg-teal-100 px-2 py-1 rounded font-medium inline-flex items-center gap-1"
-                      >
-                        {shop.name}
-                        <ExternalLink className="w-2.5 h-2.5" />
-                      </a>
-                    ))}
-                  </div>
+                {/* Bottom Rationale Note */}
+                <div className="text-xs font-semibold text-[#0A2E2B] mt-5 pt-3 border-t border-[#D3DDD8]/60">
+                  {isRec
+                    ? 'Clears your bar at the lowest cost.'
+                    : idx === 1
+                    ? `Close runner-up. Only ${(cand.monthlyCostUsd || 0) > (recommended?.monthlyCostUsd || 0) ? `$${savingVsRunnerUp} more/mo` : 'similar price'}.`
+                    : reference && reference.monthlyCostUsd
+                    ? `${(reference.monthlyCostUsd / (recommended?.monthlyCostUsd || 1)).toFixed(0)}× the cost of the first pick for ${fitScore - Math.round((recommended?.avgScore || 0) * 10)} more fit points.`
+                    : 'High capability premium tier candidate.'}
                 </div>
               </div>
             );
@@ -294,72 +216,253 @@ export default async function EvaluationDetailPage({ params }: { params: Promise
         </div>
       </section>
 
-      {/* SCENARIO AUDIT / ARENA DRILL-DOWN */}
-      <section className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm space-y-6">
-        <div className="border-b border-gray-100 pb-4">
-          <h2 className="text-2xl font-bold text-[#0C3838]">Test Scenario Audit & Judge Rationale</h2>
-          <p className="text-sm text-gray-500">
-            Inspect the exact responses produced by candidate models and the objective judge scoring for each scenario.
+      {/* ========================================================================= */}
+      {/* SCREEN 3: DECIDE & WHAT YOU SAVE                                         */}
+      {/* ========================================================================= */}
+      <section className="space-y-4 pt-4 border-t border-[#D3DDD8]">
+        <div>
+          <h2 className="text-3xl font-semibold tracking-[-0.01em] text-[#0A2E2B]">
+            Choose {recommended?.name || recommended?.modelId}
+          </h2>
+          <p className="text-sm text-[#4B605C] mt-1">
+            It clears your quality bar (fit {Math.round((recommended?.avgScore || 0) * 10)}, you need {barThreshold}) at the lowest cost of the three.
           </p>
         </div>
 
-        <div className="space-y-6">
-          {compScenarios.map((sc) => {
-            return (
-              <div key={sc.id} className="border border-gray-200 rounded-xl p-5 space-y-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <span className="text-xs font-bold text-[#D97706] uppercase tracking-wide">
-                      Scenario #{sc.position}
-                    </span>
-                    <h4 className="text-base font-bold text-gray-900 mt-0.5">"{sc.prompt}"</h4>
+        {/* Two-Column Decision Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch">
+          {/* Left Card: What You Save */}
+          <div className="md:col-span-7 bg-white border border-[#D3DDD8] rounded-xl p-6 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="text-[15px] font-semibold text-[#0A2E2B]">What you save</div>
+
+              {/* Big Savings Headline */}
+              <div className="flex items-baseline gap-3 my-3">
+                <span className="font-serif font-semibold text-5xl text-[#8A5A0B] leading-none">
+                  ${savingMonthly.toLocaleString()}
+                </span>
+                <span className="text-xs text-[#4B605C] leading-snug">
+                  a month against the top-tier model.
+                  <br />
+                  ${savingYearly.toLocaleString()} a year.
+                  {savingVsRunnerUp > 0 && ` $${savingVsRunnerUp.toLocaleString()} a month less than ${runnerUp?.name}.`}
+                </span>
+              </div>
+
+              {/* Comparative Horizontal Bar Rows */}
+              <div className="space-y-2 mt-4">
+                {compCandidates.map((cand) => {
+                  const isRec = cand.id === recommended?.id;
+                  const pct = Math.max(2, Math.round(((cand.monthlyCostUsd || 1) / maxCost) * 100));
+
+                  return (
+                    <div key={cand.id} className="flex items-center gap-2.5 text-xs">
+                      <span
+                        className={`w-36 sm:w-44 truncate ${
+                          isRec ? 'font-semibold text-[#0A2E2B]' : 'text-[#4B605C]'
+                        }`}
+                      >
+                        {cand.name}
+                        {cand.tier === 'top' ? ', top tier' : ''}
+                      </span>
+                      <div className="flex-1 h-3 rounded-full bg-[#EDF2EF] overflow-hidden">
+                        <div
+                          className={`h-3 rounded-full transition-all duration-500 ${
+                            isRec ? 'bg-[#B87A14]' : 'bg-[#A9BDB7]'
+                          }`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span
+                        className={`w-16 text-right ${
+                          isRec ? 'font-bold text-[#8A5A0B]' : 'text-[#4B605C]'
+                        }`}
+                      >
+                        ${cand.monthlyCostUsd?.toLocaleString()}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-[11px] text-[#4B605C] mt-2">
+                Monthly cost at {comp.conversationsPerMonth.toLocaleString()} conversations
+              </p>
+            </div>
+
+            {/* Volume Doubles Projection */}
+            <div className="bg-[#EDF2EF] border border-[#D3DDD8] rounded-lg p-3 text-xs text-[#0A2E2B]">
+              <strong>If volume doubles</strong> to {(comp.conversationsPerMonth * 2).toLocaleString()} conversations:{' '}
+              {recommended?.name} ${((recommended?.monthlyCostUsd || 0) * 2).toLocaleString()},{' '}
+              {reference?.name} ${((reference?.monthlyCostUsd || 0) * 2).toLocaleString()}.
+            </div>
+          </div>
+
+          {/* Right Card: Where to Get */}
+          <div className="md:col-span-5 bg-white border border-[#D3DDD8] rounded-xl p-6 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="text-[15px] font-semibold text-[#0A2E2B]">
+                Where to get {recommended?.name || 'this model'}
+              </div>
+
+              {/* Best Provider Option */}
+              <div className="bg-[#FBF3E2] border border-[#E7B44A] rounded-xl p-3.5 mt-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-sm text-[#0A2E2B]">
+                    {recommended?.provider} API, direct
+                  </span>
+                  <span className="pill rec">Best for you</span>
+                </div>
+                <p className="text-xs text-[#0A2E2B]">
+                  In ${(recommended?.inputPriceSnapshot || 0.1).toFixed(2)}, out $
+                  {(recommended?.outputPriceSnapshot || 0.5).toFixed(2)} per 1M tokens, at list price.
+                </p>
+                <p className="text-xs text-[#0A2E2B]">
+                  Fastest start: obtain an API key directly from official platform.
+                </p>
+              </div>
+
+              {/* Secondary Cloud Providers */}
+              <div className="space-y-2 mt-2.5">
+                {(recommended?.whereToBuy || [
+                  { name: 'Amazon Bedrock', url: 'https://aws.amazon.com/bedrock' },
+                  { name: 'Google Cloud Vertex AI', url: 'https://cloud.google.com/vertex-ai' },
+                  { name: 'OpenRouter Gateway', url: 'https://openrouter.ai' },
+                ]).map((shop: { name: string; url: string }, idx: number) => (
+                  <div
+                    key={idx}
+                    className="border border-[#D3DDD8] rounded-xl p-3 flex items-center justify-between text-xs"
+                  >
+                    <div>
+                      <div className="font-semibold text-[#0A2E2B]">{shop.name}</div>
+                      <div className="text-[11px] text-[#4B605C]">
+                        Standard cloud deployment endpoint
+                      </div>
+                    </div>
+                    <a
+                      href={shop.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#0A2E2B] hover:text-[#1F5C55] px-2 py-1 bg-[#EDF2EF] rounded"
+                    >
+                      Connect
+                      <ExternalLink className="w-3 h-3 text-[#4B605C]" />
+                    </a>
                   </div>
-                  <div className="text-right text-xs text-gray-400 font-medium">
-                    Rubric criteria: {sc.rubric.length} points
+                ))}
+              </div>
+            </div>
+
+            <div className="text-[11px] text-[#4B605C] pt-2 border-t border-[#D3DDD8]">
+              Verified official prices. BenchCraft does not charge markups or broker fees.
+            </div>
+          </div>
+        </div>
+
+        {/* Action Strip */}
+        <div className="bg-white border border-[#D3DDD8] rounded-xl p-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs sm:text-sm text-[#4B605C]">
+            <strong>Before you commit:</strong> test it on 50 of your real customer questions. It clears your quality bar by {Math.round((recommended?.avgScore || 0) * 10) - barThreshold} points.
+          </p>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Link
+              href={`/c/${id}/report`}
+              className="btn-ledger-ghost text-xs sm:text-sm flex-1 sm:flex-initial"
+            >
+              <Printer className="w-4 h-4" /> Download report
+            </Link>
+            <Link
+              href="/c/new"
+              className="btn-ledger text-xs sm:text-sm flex-1 sm:flex-initial"
+            >
+              Run new test
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* DETAILED ARENA SCENARIO INSPECTION                                       */}
+      {/* ========================================================================= */}
+      <section className="bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-[#0A2E2B]">
+            Scenario Response Inspection & Blind Scoring
+          </h3>
+          <p className="text-xs text-[#4B605C] mt-0.5">
+            Examine how each candidate answered your domain scenarios alongside the objective judge evaluation.
+          </p>
+        </div>
+
+        <div className="space-y-4 pt-1">
+          {compScenarios.map((sc) => (
+            <div key={sc.id} className="border border-[#D3DDD8] rounded-lg p-4 space-y-3 bg-[#FAFCFB]">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                <div>
+                  <span className="text-[11px] font-semibold text-[#B87A14] uppercase tracking-wider">
+                    Test Case #{sc.position}
+                  </span>
+                  <div className="text-sm font-semibold text-[#0A2E2B] mt-0.5">
+                    &ldquo;{sc.prompt}&rdquo;
                   </div>
                 </div>
-
-                {/* Candidate Responses Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-                  {top3.map((cand) => {
-                    const ans = compAnswers.find(
-                      (a) => a.candidateId === cand.id && a.scenarioId === sc.id
-                    );
-
-                    return (
-                      <div key={cand.id} className="bg-gray-50 rounded-xl p-4 space-y-2 border border-gray-100 text-xs">
-                        <div className="flex items-center justify-between font-semibold">
-                          <span className="text-gray-900">{cand.name}</span>
-                          <span className="px-2 py-0.5 rounded bg-white border font-bold text-[#0C3838]">
-                            {ans?.score?.toFixed(1) || '—'} / 10
-                          </span>
-                        </div>
-                        <p className="text-gray-600 line-clamp-4 leading-relaxed">
-                          {ans?.answer || '(No response recorded)'}
-                        </p>
-                        {ans?.judgeRationale && (
-                          <div className="text-[11px] text-gray-500 pt-2 border-t border-gray-200/60 italic">
-                            Judge: {ans.judgeRationale}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                <div className="text-[11px] text-[#4B605C] whitespace-nowrap">
+                  {sc.rubric.length} grading criteria
                 </div>
               </div>
-            );
-          })}
+
+              {/* Candidate Answers Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-[#D3DDD8]">
+                {top3.map((cand) => {
+                  const ans = compAnswers.find(
+                    (a) => a.candidateId === cand.id && a.scenarioId === sc.id
+                  );
+                  const isRec = cand.id === recommended?.id;
+
+                  return (
+                    <div
+                      key={cand.id}
+                      className={`p-3 rounded-lg border text-xs flex flex-col justify-between space-y-2 ${
+                        isRec
+                          ? 'bg-white border-[#B87A14]/60'
+                          : 'bg-white border-[#D3DDD8]'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between pb-1.5 border-b border-[#D3DDD8] font-semibold">
+                          <span className="text-[#0A2E2B] truncate">{cand.name}</span>
+                          <span className="text-[#1F5C55] font-bold">
+                            {ans?.score ? `${ans.score.toFixed(1)}/10` : '—'}
+                          </span>
+                        </div>
+                        <p className="text-[#4B605C] mt-2 line-clamp-4 leading-relaxed font-sans text-xs">
+                          {ans?.answer || '(No response recorded)'}
+                        </p>
+                      </div>
+
+                      {ans?.judgeRationale && (
+                        <div className="text-[11px] text-[#4B605C] pt-2 border-t border-[#D3DDD8]">
+                          <strong>Judge:</strong> {ans.judgeRationale}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Methodology & Data Provenance */}
-      <section className="p-4 rounded-xl bg-gray-100 text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+      {/* Footer Verification Stamp */}
+      <div className="p-3.5 bg-white border border-[#D3DDD8] rounded-xl text-xs text-[#4B605C] flex flex-col sm:flex-row items-center justify-between gap-2">
         <div>
-          <strong>Data Provenance:</strong> List prices checked via OpenRouter API. Blind evaluation scored using{' '}
-          <code>google/gemini-2.5-flash</code>.
+          Audit Reference: <code className="text-[#0A2E2B] font-mono">{id}</code> · Verified against official OpenRouter endpoint rates
         </div>
-        <div>Zero Data Retention enforced on all arena prompts.</div>
-      </section>
+        <div className="font-semibold text-[#1F5C55]">
+          Zero Data Retention Confirmed
+        </div>
+      </div>
     </div>
   );
 }

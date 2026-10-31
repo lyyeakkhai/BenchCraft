@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 import { comparisons, scenarios, candidates, catalogModels } from '@/drizzle/schema';
 import { requireUser } from '@/lib/auth';
 import { ReviewForm } from './review-form';
-import { ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Stepper } from '@/components/brand/stepper';
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -38,23 +38,30 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
     .where(eq(candidates.comparisonId, id));
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 py-2">
-      {/* Header */}
-      <div className="space-y-2 border-b border-gray-200 pb-5">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#D97706]">Step 2 of 3</span>
-        <h1 className="text-3xl font-extrabold text-[#0C3838]">Review Domain Understanding & Test Scenarios</h1>
-        <p className="text-sm text-gray-600">
-          We analyzed your business context and formulated {compScenarios.length} test scenarios.
-          You can refine any query or grading criteria before running the arena.
-        </p>
+    <div className="space-y-6">
+      {/* Step Progress Bar */}
+      <div className="rounded-xl overflow-hidden border border-[#D3DDD8] shadow-xs">
+        <Stepper currentStep={2} businessTitle={comp.title} />
       </div>
 
-      <ReviewForm
-        comparisonId={id}
-        initialProfile={comp.domainProfile!}
-        initialScenarios={compScenarios}
-        candidates={compCandidates}
-      />
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-[-0.01em] text-[#0A2E2B]">
+            Review Domain Understanding & Test Scenarios
+          </h1>
+          <p className="text-sm text-[#4B605C] mt-1">
+            We formulated {compScenarios.length} grounded scenarios from your description and documents.
+            Review the questions and grading rubrics before the blinded arena comparison.
+          </p>
+        </div>
+
+        <ReviewForm
+          comparisonId={id}
+          initialProfile={comp.domainProfile!}
+          initialScenarios={compScenarios}
+          candidates={compCandidates}
+        />
+      </div>
     </div>
   );
 }
