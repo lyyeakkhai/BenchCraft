@@ -2,15 +2,22 @@
 
 import { useState } from 'react';
 import { createEvaluationAction } from '@/actions/evaluations';
-import { UploadCloud, Shield, HelpCircle, Sparkles, FileText, X } from 'lucide-react';
+import { Stepper } from '@/components/brand/stepper';
+import { ShieldCheck, Upload, Trash2, CheckCircle2 } from 'lucide-react';
 
 export default function NewEvaluationPage() {
-  const [conversations, setConversations] = useState<number>(10000);
+  const [title, setTitle] = useState('Nari Boutique Support Assistant');
+  const [description, setDescription] = useState(
+    "We sell women's fashion online in Cambodia. Customers message us on Telegram and Facebook about orders, sizes and delivery. We want an assistant that answers from our FAQ and policies in Khmer and English, and hands over to a person when it is unsure."
+  );
+  const [mainTask, setMainTask] = useState('Customer support chat');
+  const [conversations, setConversations] = useState<number>(50000);
+  const [priority, setPriority] = useState<'cost' | 'quality' | 'speed'>('cost');
   const [convLength, setConvLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const presets = [1000, 10000, 50000, 100000];
+  const taskOptions = ['Customer support chat', 'Document Q&A', 'Coding', 'Data extraction'];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -25,229 +32,279 @@ export default function NewEvaluationPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 py-2">
-      {/* Header */}
-      <div className="space-y-2 border-b border-gray-200 pb-5">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#D97706]">Step 1 of 3</span>
-        <h1 className="text-3xl font-extrabold text-[#0C3838]">Describe Your Business & AI Use Case</h1>
-        <p className="text-sm text-gray-600">
-          BenchCraft analyzes your exact domain, documents, and volume to evaluate candidates in a tailored arena.
-        </p>
+    <div className="space-y-6">
+      {/* Step Progress Bar */}
+      <div className="rounded-xl overflow-hidden border border-[#D3DDD8] shadow-xs">
+        <Stepper currentStep={1} businessTitle={title || 'New Evaluation'} />
       </div>
 
-      <form
-        action={async (formData: FormData) => {
-          setIsSubmitting(true);
-          // Append files from state
-          selectedFiles.forEach((file) => formData.append('files', file));
-          formData.set('conversationsPerMonth', conversations.toString());
-          formData.set('conversationLength', convLength);
-          try {
-            await createEvaluationAction(formData);
-          } catch (err) {
-            console.error(err);
-            setIsSubmitting(false);
-            alert((err as Error).message || 'Failed to analyze business. Please check connection.');
-          }
-        }}
-        className="space-y-6"
-      >
-        {/* Project Name */}
-        <div className="space-y-2">
-          <label htmlFor="title" className="block text-sm font-semibold text-gray-900">
-            Project or Business Name
-          </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            required
-            defaultValue="Nari Boutique Support Assistant"
-            placeholder="e.g. Nari Boutique, Logistics FAQ Assistant, Invoice OCR Assistant"
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0C3838] bg-white text-sm"
-          />
+      {/* Main Container */}
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-[-0.01em] text-[#0A2E2B]">
+            Tell us about your business
+          </h1>
+          <p className="text-sm text-[#4B605C] mt-1">
+            Describe it in your own words and add the documents you have. We do the comparison.
+          </p>
         </div>
 
-        {/* Business Description */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label htmlFor="description" className="block text-sm font-semibold text-gray-900">
-              Business Description & AI Requirements
-            </label>
-            <span className="text-xs text-gray-400">Be as specific as possible</span>
-          </div>
-          <textarea
-            id="description"
-            name="description"
-            rows={5}
-            required
-            defaultValue="We are an online fashion boutique in Cambodia selling dresses and shoes. Our AI assistant needs to answer customer questions about clothing sizes, shipping times to Phnom Penh and provinces, return policies, and stock availability in both English and Khmer. High accuracy on product details is critical to maintain customer trust."
-            placeholder="Describe what your business does, who talks to the AI, what questions they ask, what languages are spoken, and any high-stakes edge cases..."
-            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0C3838] bg-white text-sm leading-relaxed"
-          />
-        </div>
-
-        {/* Volume & Length Configuration */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-2xl border border-gray-200">
-          {/* Expected Conversations */}
-          <div className="space-y-3">
-            <label className="block text-sm font-semibold text-gray-900">
-              Expected Volume per Month
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {presets.map((val) => (
-                <button
-                  type="button"
-                  key={val}
-                  onClick={() => setConversations(val)}
-                  className={`py-2 px-3 text-xs font-semibold rounded-lg border transition ${
-                    conversations === val
-                      ? 'border-[#0C3838] bg-[#0C3838] text-white shadow-sm'
-                      : 'border-gray-200 text-gray-700 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  {val.toLocaleString()} convs
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-2 pt-1">
-              <span className="text-xs text-gray-500">Custom:</span>
-              <input
-                type="number"
-                min={100}
-                max={5000000}
-                value={conversations}
-                onChange={(e) => setConversations(parseInt(e.target.value) || 1000)}
-                className="w-28 px-2.5 py-1 text-xs border rounded-md"
-              />
-              <span className="text-xs text-gray-500">/ mo</span>
-            </div>
-          </div>
-
-          {/* Conversation Length */}
-          <div className="space-y-3">
-            <label className="block text-sm font-semibold text-gray-900">
-              Typical Interaction Length
-            </label>
-            <div className="space-y-2">
-              {[
-                { id: 'short', label: 'Short (1–2 turns)', desc: 'Quick Q&A, simple lookups' },
-                { id: 'medium', label: 'Medium (3–5 turns)', desc: 'Standard support dialogs' },
-                { id: 'long', label: 'Long (6–10 turns)', desc: 'Detailed consultations & drafting' },
-              ].map((item) => (
-                <label
-                  key={item.id}
-                  onClick={() => setConvLength(item.id as any)}
-                  className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition ${
-                    convLength === item.id
-                      ? 'border-[#0C3838] bg-teal-50/50'
-                      : 'border-gray-200 hover:bg-gray-50'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="convLengthRadio"
-                    checked={convLength === item.id}
-                    onChange={() => setConvLength(item.id as any)}
-                    className="mt-0.5 text-[#0C3838]"
-                  />
-                  <div>
-                    <div className="text-xs font-bold text-gray-900">{item.label}</div>
-                    <div className="text-[11px] text-gray-500">{item.desc}</div>
-                  </div>
+        <form
+          action={async (formData: FormData) => {
+            setIsSubmitting(true);
+            selectedFiles.forEach((file) => formData.append('files', file));
+            formData.set('title', title);
+            formData.set(
+              'description',
+              `${description}\n\n[Main Task: ${mainTask} | Priority: ${priority} | Target Conversations: ${conversations}]`
+            );
+            formData.set('conversationsPerMonth', conversations.toString());
+            formData.set('conversationLength', convLength);
+            try {
+              await createEvaluationAction(formData);
+            } catch (err) {
+              console.error(err);
+              setIsSubmitting(false);
+              alert((err as Error).message || 'Failed to analyze business.');
+            }
+          }}
+          className="space-y-6"
+        >
+          {/* Two-Column Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+            {/* Left Card: Business Description & Operational Scale */}
+            <section className="md:col-span-7 bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-4">
+              <div>
+                <label className="block text-[13px] font-semibold text-[#0A2E2B] mb-1.5">
+                  Project or Business Name
                 </label>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Document Intake & Privacy Notice */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="block text-sm font-semibold text-gray-900">
-              Attach Business Documents (Optional)
-            </label>
-            <span className="text-xs text-gray-400">PDF, DOCX, TXT, MD (Max 5 files, 10MB each)</span>
-          </div>
-
-          <div className="border-2 border-dashed border-gray-300 hover:border-[#0C3838] rounded-2xl p-6 text-center bg-white transition relative">
-            <input
-              type="file"
-              multiple
-              accept=".pdf,.docx,.txt,.md"
-              onChange={handleFileChange}
-              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-            />
-            <div className="space-y-2 pointer-events-none">
-              <UploadCloud className="w-8 h-8 text-gray-400 mx-auto" />
-              <div className="text-sm font-medium text-gray-700">
-                Click to browse or drag & drop business files here
+                <input
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Nari Boutique"
+                  className="w-full px-3 py-2 text-sm bg-white border border-[#A9BDB7] rounded-lg text-[#0A2E2B] focus:outline-none focus:border-[#0A2E2B] transition"
+                />
               </div>
-              <p className="text-xs text-gray-400">
-                Upload product catalogs, support FAQs, or policy sheets to ground the test scenarios
-              </p>
-            </div>
-          </div>
 
-          {/* Uploaded File List */}
-          {selectedFiles.length > 0 && (
-            <div className="space-y-2 pt-1">
-              {selectedFiles.map((f, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs"
-                >
-                  <div className="flex items-center gap-2 truncate">
-                    <FileText className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                    <span className="font-medium text-gray-800 truncate">{f.name}</span>
-                    <span className="text-gray-400">({(f.size / 1024).toFixed(0)} KB)</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeFile(idx)}
-                    className="text-gray-400 hover:text-red-500 p-1"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+              <div>
+                <label className="block text-[13px] font-semibold text-[#0A2E2B] mb-1.5">
+                  What does your business do, and what should AI do for it?
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-3 py-2 text-sm leading-relaxed bg-white border border-[#A9BDB7] rounded-lg text-[#0A2E2B] focus:outline-none focus:border-[#0A2E2B] transition"
+                  placeholder="Describe your customers, languages, policies, and key requirements..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-semibold text-[#0A2E2B] mb-2">
+                  Main task
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {taskOptions.map((task) => (
+                    <button
+                      type="button"
+                      key={task}
+                      onClick={() => setMainTask(task)}
+                      className={`text-xs px-3 py-1.5 rounded-full border transition cursor-pointer ${
+                        mainTask === task
+                          ? 'bg-[#0A2E2B] border-[#0A2E2B] text-white font-semibold'
+                          : 'bg-white border-[#A9BDB7] text-[#0A2E2B] hover:border-[#0A2E2B]'
+                      }`}
+                    >
+                      {task}
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
 
-          {/* Privacy Guarantee Banner */}
-          <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-xs text-teal-900">
-            <Shield className="w-4 h-4 text-[#0C3838] flex-shrink-0 mt-0.5" />
-            <div>
-              <strong className="font-semibold text-[#0C3838]">Zero Data Retention Policy:</strong> Your uploaded documents are analyzed strictly in-memory to formulate custom test scenarios. No raw files are ever stored permanently on our servers or used for model training.
-            </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div>
+                  <label className="block text-[13px] font-semibold text-[#0A2E2B] mb-1.5">
+                    Conversations per month
+                  </label>
+                  <input
+                    type="number"
+                    min={100}
+                    max={5000000}
+                    step={1000}
+                    value={conversations}
+                    onChange={(e) => setConversations(parseInt(e.target.value) || 10000)}
+                    className="w-full px-3 py-2 text-sm bg-white border border-[#A9BDB7] rounded-lg text-[#0A2E2B] focus:outline-none focus:border-[#0A2E2B] transition font-sans"
+                  />
+                  <div className="flex gap-1.5 mt-2">
+                    {[10000, 50000, 100000].map((num) => (
+                      <button
+                        type="button"
+                        key={num}
+                        onClick={() => setConversations(num)}
+                        className={`text-[11px] px-2 py-0.5 rounded border transition ${
+                          conversations === num
+                            ? 'bg-[#0A2E2B] text-white border-[#0A2E2B]'
+                            : 'bg-white border-[#D3DDD8] text-[#4B605C] hover:border-[#0A2E2B]'
+                        }`}
+                      >
+                        {num.toLocaleString()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[13px] font-semibold text-[#0A2E2B] mb-1.5">
+                    What matters most
+                  </label>
+                  <div className="flex border border-[#A9BDB7] rounded-lg overflow-hidden">
+                    {(['cost', 'quality', 'speed'] as const).map((opt) => (
+                      <button
+                        type="button"
+                        key={opt}
+                        onClick={() => {
+                          setPriority(opt);
+                          if (opt === 'quality') setConvLength('long');
+                          else if (opt === 'speed') setConvLength('short');
+                          else setConvLength('medium');
+                        }}
+                        className={`flex-1 py-2 text-xs text-center transition capitalize cursor-pointer ${
+                          priority === opt
+                            ? 'bg-[#0A2E2B] text-white font-semibold'
+                            : 'bg-white text-[#4B605C] hover:bg-stone-50'
+                        }`}
+                      >
+                        {opt === 'cost' ? 'Low cost' : opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Right Card: Your Documents & Zero Data Retention */}
+            <section className="md:col-span-5 bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-4">
+              <div>
+                <h3 className="text-[15px] font-semibold text-[#0A2E2B]">
+                  Your documents
+                </h3>
+                <p className="text-xs text-[#4B605C] mt-0.5">
+                  Ground scenarios in your real business policies and product catalogs.
+                </p>
+              </div>
+
+              {/* Upload Dropzone */}
+              <div className="relative border-1.5 border-dashed border-[#1F5C55] rounded-xl bg-[#F6FAF8] p-5 flex flex-col items-center justify-center text-center transition hover:bg-[#EDF2EF]">
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.docx,.txt,.md"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                />
+                <svg
+                  width="26"
+                  height="26"
+                  viewBox="0 0 26 26"
+                  className="text-[#1F5C55] mb-1.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M13 20V7M7 12l6-6 6 6M5 22h16" />
+                </svg>
+                <b className="text-xs sm:text-sm text-[#0A2E2B]">Drop files here or browse</b>
+                <small className="text-[11px] text-[#4B605C] mt-0.5">
+                  PDF, Word, or text, up to 10 MB each
+                </small>
+              </div>
+
+              {/* Uploaded Files List */}
+              {selectedFiles.length > 0 ? (
+                <div className="space-y-2 pt-1 border-t border-[#D3DDD8]">
+                  {selectedFiles.map((file, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between py-1.5 border-b border-[#D3DDD8] text-xs"
+                    >
+                      <div className="flex items-center gap-2 truncate pr-2">
+                        <svg
+                          width="16"
+                          height="18"
+                          viewBox="0 0 18 20"
+                          className="flex-shrink-0 text-[#1F5C55]"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M3 1h8l5 5v13H3z" />
+                          <path d="M11 1v5h5" />
+                        </svg>
+                        <span className="font-semibold text-[#0A2E2B] truncate">{file.name}</span>
+                        <span className="text-[#4B605C] text-[11px] flex-shrink-0">
+                          {(file.size / 1024).toFixed(0)} KB
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#1F5C55]" />
+                        <button
+                          type="button"
+                          onClick={() => removeFile(idx)}
+                          className="text-[#4B605C] hover:text-red-600 p-0.5"
+                          title="Remove file"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-[12px] text-[#4B605C] italic py-1">
+                  No files attached yet. (Optional: default domain scenarios will be generated based on your description).
+                </div>
+              )}
+
+              {/* Privacy / Zero Data Retention Guarantee */}
+              <div className="flex items-start gap-2 pt-2 text-[11px] text-[#4B605C]">
+                <ShieldCheck className="w-4 h-4 text-[#1F5C55] flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>Zero Data Retention:</strong> Files are parsed strictly in memory and discarded. No data is stored or used for model training.
+                </span>
+              </div>
+            </section>
           </div>
-        </div>
 
-        {/* Submit Button */}
-        <div className="pt-2">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`w-full py-4 px-6 rounded-xl font-bold text-white text-base shadow-md transition flex items-center justify-center gap-2 ${
-              isSubmitting
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[#0C3838] hover:bg-[#164E4E] cursor-pointer'
-            }`}
-          >
-            {isSubmitting ? (
-              <>
-                <Sparkles className="w-5 h-5 animate-spin" />
-                Analyzing Domain & Formulating Scenarios...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5" />
-                Analyze Business & Generate Scenarios
-              </>
-            )}
-          </button>
-        </div>
-      </form>
+          {/* Bottom CTA Strip */}
+          <div className="bg-white border border-[#D3DDD8] rounded-xl p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs sm:text-sm text-[#4B605C]">
+              Next, we match models to your use case and compare the top 3.
+            </p>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`w-full sm:w-auto px-6 py-2.5 rounded-lg text-sm font-semibold text-white transition flex items-center justify-center gap-2 cursor-pointer ${
+                isSubmitting ? 'bg-[#4B605C] cursor-not-allowed' : 'bg-[#0A2E2B] hover:bg-[#1F5C55]'
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Analyzing Business Context...
+                </>
+              ) : (
+                'Find my model'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

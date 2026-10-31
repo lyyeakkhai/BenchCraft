@@ -1,74 +1,90 @@
-import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
-import { Suspense } from 'react';
+import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
-import { Logo } from '@/components/brand/logo';
+import { Newsreader, Hanken_Grotesk } from 'next/font/google';
+import Image from 'next/image';
 import Link from 'next/link';
+import { Navbar } from '@/components/navigation/navbar';
 import './globals.css';
 
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  variable: '--font-newsreader',
+  display: 'swap',
+});
+
+const hanken = Hanken_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-hanken',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'BenchCraft — Right-Sized AI Model Evaluation',
-  description: 'Avoid overspending on AI models. Get tailored recommendations based on your business description and documents.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://benchcraft.dev'),
+  title: 'BenchCraft — Right-Sized Model Evaluation',
+  description: 'Objective, domain-grounded LLM selection and financial right-sizing for technical founders.',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/favicon-180.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.svg',
+  },
+  openGraph: {
+    title: 'BenchCraft — Right-Sized Model Evaluation',
+    description: 'Objective, domain-grounded LLM selection and financial right-sizing for technical founders.',
+    images: [
+      {
+        url: '/benchcraft-lockup-light.png',
+        width: 1200,
+        height: 630,
+        alt: 'BenchCraft Logo',
+      },
+      {
+        url: '/benchcraft-app-icon-1024.png',
+        width: 1024,
+        height: 1024,
+        alt: 'BenchCraft App Icon',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BenchCraft — Right-Sized Model Evaluation',
+    description: 'Objective, domain-grounded LLM selection and financial right-sizing for technical founders.',
+    images: ['/benchcraft-lockup-light.png'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en" className="h-full antialiased">
-        <body className="min-h-full flex flex-col bg-[#F9FAFB] text-[#111827]">
-          <header className="w-full border-b border-gray-200 bg-white sticky top-0 z-50">
-            <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-              <Link href="/" className="hover:opacity-90 transition">
-                <Logo />
-              </Link>
+      <html lang="en" className={`${newsreader.variable} ${hanken.variable} h-full antialiased`}>
+        <body className="min-h-full flex flex-col bg-[#EDF2EF] text-[#0A2E2B] font-sans selection:bg-[#0A2E2B] selection:text-white">
+          <Navbar />
 
-              <div className="flex items-center gap-4">
-                <Suspense fallback={<div className="h-8 w-20 bg-gray-100 animate-pulse rounded" />}>
-                  <Show when="signed-out">
-                    <div className="flex items-center gap-3">
-                      <SignInButton mode="modal">
-                        <button className="text-sm font-medium text-gray-700 hover:text-[#0C3838] px-3 py-1.5 transition cursor-pointer">
-                          Sign In
-                        </button>
-                      </SignInButton>
-                      <SignUpButton mode="modal">
-                        <button className="text-sm font-medium bg-[#0C3838] text-white px-4 py-2 rounded-lg hover:bg-[#164E4E] transition shadow-sm cursor-pointer">
-                          Get Started
-                        </button>
-                      </SignUpButton>
-                    </div>
-                  </Show>
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8">{children}</main>
 
-                  <Show when="signed-in">
-                    <div className="flex items-center gap-4">
-                      <Link
-                        href="/dashboard"
-                        className="text-sm font-medium text-gray-600 hover:text-[#0C3838] transition"
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        href="/c/new"
-                        className="text-sm font-medium bg-[#0C3838] text-white px-3.5 py-1.5 rounded-lg hover:bg-[#164E4E] transition shadow-sm"
-                      >
-                        + New Evaluation
-                      </Link>
-                      <UserButton />
-                    </div>
-                  </Show>
-                </Suspense>
-              </div>
-            </div>
-          </header>
-
-          <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-8">{children}</main>
-
-          <footer className="border-t border-gray-200 bg-white py-6 text-center text-xs text-gray-500">
+          <footer className="border-t border-[#D3DDD8] bg-white py-6 text-xs text-[#4B605C]">
             <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <Logo className="h-5 text-sm" />
-                <span>— Right-sized AI Model Evaluation for Technical Founders</span>
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/benchcraft-lockup-light.svg"
+                  alt="BenchCraft"
+                  width={110}
+                  height={24}
+                  className="h-5 w-auto opacity-80"
+                />
+                <span className="text-[#A9BDB7]">|</span>
+                <span>Empirical model selection for technical founders</span>
               </div>
-              <p>© 2026 BenchCraft. Powered by OpenRouter & Clerk.</p>
+              <div className="flex items-center gap-6 font-mono text-[11px] text-[#4B605C]">
+                <span>ZERO DATA RETENTION</span>
+                <span>EMPIRICAL ARENA</span>
+                <span>© 2026 BENCHCRAFT</span>
+              </div>
             </div>
           </footer>
         </body>

@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { comparisons, candidates, catalogModels } from '@/drizzle/schema';
 import { requireUser } from '@/lib/auth';
 import { ArenaClient } from './arena-client';
+import { Stepper } from '@/components/brand/stepper';
 
 export default async function ArenaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -33,7 +34,12 @@ export default async function ArenaPage({ params }: { params: Promise<{ id: stri
     .where(eq(candidates.comparisonId, id));
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 py-8 text-center">
+    <div className="space-y-6 max-w-3xl mx-auto">
+      {/* Stepper */}
+      <div className="rounded-xl overflow-hidden border border-[#D3DDD8] shadow-xs">
+        <Stepper currentStep={2} businessTitle={comp.title} />
+      </div>
+
       <ArenaClient comparisonId={id} candidates={compCandidates} />
     </div>
   );
