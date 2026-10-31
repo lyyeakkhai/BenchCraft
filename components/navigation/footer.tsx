@@ -1,193 +1,121 @@
 import Link from 'next/link';
-import { ShieldCheck, ArrowUpRight, ExternalLink } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { BrandLogo } from '@/components/brand/brand-logo';
+import { ProviderLogo } from '@/components/brand/provider-logo';
 
 export function Footer() {
+  const providers = [
+    { key: 'anthropic', name: 'Anthropic' },
+    { key: 'openai', name: 'OpenAI' },
+    { key: 'google', name: 'Google' },
+    { key: 'meta', name: 'Meta' },
+    { key: 'deepseek', name: 'DeepSeek' },
+    { key: 'mistral', name: 'Mistral' },
+    { key: 'alibaba', name: 'Alibaba' },
+    { key: 'aws', name: 'AWS Bedrock' },
+    { key: 'azure', name: 'Azure' },
+    { key: 'groq', name: 'Groq' },
+    { key: 'openrouter', name: 'OpenRouter' },
+  ];
+
+  const technologies = [
+    { key: 'nextjs', name: 'Next.js' },
+    { key: 'react', name: 'React 19' },
+    { key: 'typescript', name: 'TypeScript' },
+    { key: 'tailwind', name: 'Tailwind' },
+    { key: 'postgres', name: 'Postgres' },
+    { key: 'drizzle', name: 'Drizzle' },
+    { key: 'clerk', name: 'Clerk' },
+  ];
+
   return (
-    <footer className="w-full border-t border-[#D3DDD8] bg-white text-[#4B605C] pt-16 pb-12 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12">
-        {/* Top Section: Brand + Mission + Live Status */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 border-b border-[#D3DDD8] pb-10">
-          <div className="space-y-4 max-w-sm">
-            <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
+    <footer className="w-full border-t border-rule bg-paper-2 text-muted py-16 transition-colors">
+      <div className="container space-y-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-rule pb-12">
+          <div className="space-y-4 max-w-2xl">
+            <Link href="/" aria-label="BenchCraft home" className="inline-block hover:opacity-90 transition-opacity">
               <BrandLogo width={140} height={32} className="h-8 w-auto" />
             </Link>
-            <p className="text-xs sm:text-sm text-[#4B605C] leading-relaxed">
-              Objective, domain-grounded LLM evaluation and financial right-sizing for technical founders.
-              Eliminating inference waste before it hits production.
+            <p className="font-display text-2xl sm:text-3xl text-ink leading-tight">
+              Audit your workload against five candidate models before paying frontier inference rates.
             </p>
           </div>
 
-          {/* Operational Status Pill */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EDF2EF] border border-[#D3DDD8] text-xs font-semibold text-[#0A2E2B]">
-              <span className="w-2 h-2 rounded-full bg-[#1F5C55] animate-pulse" />
-              <span>All Systems Operational</span>
-              <span className="text-[#A9BDB7]">|</span>
-              <span className="text-[#1F5C55]">ZDR Enforced</span>
-            </div>
-
-            <Link
-              href="/dashboard/evaluations/new"
-              className="btn-ledger text-xs py-2 px-4 shadow-xs"
-            >
-              Start Free Evaluation
-              <ArrowUpRight className="w-3.5 h-3.5" />
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/dashboard/evaluations/new" className="btn-ledger">
+              Run free audit
+            </Link>
+            <Link href="/dashboard" className="btn-ledger-ghost">
+              Open workspace
             </Link>
           </div>
         </div>
 
-        {/* 4-Column Navigation Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-xs">
-          {/* Column 1: Product & Architecture */}
-          <div className="space-y-3">
-            <h4 className="font-serif font-semibold text-sm text-[#0A2E2B]">
-              Platform & Architecture
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/product" className="hover:text-[#0A2E2B] transition-colors">
-                  Evaluation Arena
-                </Link>
-              </li>
-              <li>
-                <Link href="/product" className="hover:text-[#0A2E2B] transition-colors">
-                  Financial Right-Sizing Engine
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="hover:text-[#0A2E2B] transition-colors">
-                  LLM-as-a-Judge (Temp 0)
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard/models" className="hover:text-[#0A2E2B] transition-colors">
-                  Curated Model Catalog
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="hover:text-[#0A2E2B] transition-colors">
-                  Zero Data Retention (ZDR)
-                </Link>
-              </li>
-            </ul>
+        {/* Model Providers and Tech Stack Trust Strips */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 border-b border-rule pb-10 text-xs">
+          <div className="space-y-2.5">
+            <span className="text-[11px] font-outlier font-semibold uppercase tracking-wider text-muted">
+              Supported Foundation Labs &amp; Gateways
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {providers.map((p) => (
+                <span
+                  key={p.key}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-input glass-well text-ink font-medium hover:border-ink transition-colors"
+                >
+                  <ProviderLogo provider={p.key} size="xs" />
+                  <span>{p.name}</span>
+                </span>
+              ))}
+            </div>
           </div>
 
-          {/* Column 2: Solutions & Audits */}
-          <div className="space-y-3">
-            <h4 className="font-serif font-semibold text-sm text-[#0A2E2B]">
-              Audited Case Studies
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/case-study" className="hover:text-[#0A2E2B] transition-colors flex items-center gap-1">
-                  Nari Boutique ($1,485/mo)
-                  <span className="text-[10px] bg-[#FBF3E2] text-[#8A5A0B] px-1.5 py-0.2 rounded font-semibold">Top</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/case-study" className="hover:text-[#0A2E2B] transition-colors">
-                  Customer Support Chatbots
-                </Link>
-              </li>
-              <li>
-                <Link href="/case-study" className="hover:text-[#0A2E2B] transition-colors">
-                  Bilingual Khmer & English
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="hover:text-[#0A2E2B] transition-colors">
-                  Startup Unit Economics
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="hover:text-[#0A2E2B] transition-colors">
-                  ROI Savings Calculator
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Methodology */}
-          <div className="space-y-3">
-            <h4 className="font-serif font-semibold text-sm text-[#0A2E2B]">
-              Methodology & Standards
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/how-it-works" className="hover:text-[#0A2E2B] transition-colors">
-                  Blinded Scenario Testing
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="hover:text-[#0A2E2B] transition-colors">
-                  Objective Rubric Formulation
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard/models" className="hover:text-[#0A2E2B] transition-colors">
-                  Verified List Pricing (1M Tok)
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="hover:text-[#0A2E2B] transition-colors">
-                  Latency & Token Telemetry
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="hover:text-[#0A2E2B] transition-colors">
-                  Multi-Turn Dialog Stress
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Company & Trust */}
-          <div className="space-y-3">
-            <h4 className="font-serif font-semibold text-sm text-[#0A2E2B]">
-              Company & Legal
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/pricing" className="hover:text-[#0A2E2B] transition-colors">
-                  Pro Founder Plan ($29/mo)
-                </Link>
-              </li>
-              <li>
-                <Link href="/how-it-works" className="hover:text-[#0A2E2B] transition-colors">
-                  Security & Privacy Whitepaper
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard" className="hover:text-[#0A2E2B] transition-colors">
-                  Founder Dashboard
-                </Link>
-              </li>
-              <li>
-                <span className="text-[#A9BDB7] cursor-not-allowed">Terms of Service</span>
-              </li>
-              <li>
-                <span className="text-[#A9BDB7] cursor-not-allowed">Privacy Policy (ZDR)</span>
-              </li>
-            </ul>
+          <div className="space-y-2.5">
+            <span className="text-[11px] font-outlier font-semibold uppercase tracking-wider text-muted">
+              Built With High-Performance Open Web Architecture
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {technologies.map((t) => (
+                <span
+                  key={t.key}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-input glass-well text-ink font-medium hover:border-ink transition-colors"
+                >
+                  <ProviderLogo provider={t.key} size="xs" />
+                  <span>{t.name}</span>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Compliance */}
-        <div className="pt-8 border-t border-[#D3DDD8] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#4B605C]">
-          <div className="flex flex-wrap items-center gap-4">
-            <span>© 2026 BenchCraft Inc. All rights reserved.</span>
-            <span className="text-[#A9BDB7]">•</span>
-            <span className="flex items-center gap-1 text-[#1F5C55]">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              OpenRouter ZDR Verified Gateway
-            </span>
-          </div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 text-sm">
+          <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-6 gap-y-2 text-ink">
+            <Link href="/product" className="hover:text-accent transition-colors whitespace-nowrap">
+              Evaluation arena
+            </Link>
+            <Link href="/how-it-works" className="hover:text-accent transition-colors whitespace-nowrap">
+              Methodology &amp; ZDR
+            </Link>
+            <Link href="/case-study" className="hover:text-accent transition-colors whitespace-nowrap">
+              Nari Boutique ($1,485/mo)
+            </Link>
+            <Link href="/pricing" className="hover:text-accent transition-colors whitespace-nowrap">
+              Pro Founder ($29/mo)
+            </Link>
+            <Link href="/dashboard/models" className="hover:text-accent transition-colors whitespace-nowrap">
+              Model catalog
+            </Link>
+            <Link href="/c/new" className="hover:text-accent transition-colors whitespace-nowrap">
+              New evaluation
+            </Link>
+          </nav>
 
-          <div className="flex items-center gap-6 font-mono text-[#4B605C]">
-            <span>NEWSREADER & HANKEN GROTESK</span>
-            <span className="text-[#A9BDB7]">•</span>
-            <span>PROUDLY CRAFTED</span>
+          <div className="flex flex-wrap items-center gap-6 text-sm text-muted">
+            <span className="inline-flex items-center gap-1.5 text-accent font-medium">
+              <ShieldCheck className="w-4 h-4" aria-hidden="true" />
+              OpenRouter Zero Data Retention verified
+            </span>
+            <span>© 2026 BenchCraft Inc.</span>
           </div>
         </div>
       </div>

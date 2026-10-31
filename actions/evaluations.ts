@@ -196,6 +196,8 @@ export async function updateScenariosAndConfirmAction(
   redirect(`/dashboard/evaluations/${comparisonId}/arena`);
 }
 
+const activeArenaRuns = new Map<string, Promise<void>>();
+
 export async function executeArenaEvaluationAction(comparisonId: string) {
   const userId = await requireUser();
 
@@ -205,200 +207,227 @@ export async function executeArenaEvaluationAction(comparisonId: string) {
     .where(and(eq(comparisons.id, comparisonId), eq(comparisons.clerkUserId, userId)));
 
   if (!comp) throw new Error('Evaluation not found');
+  if (comp.status === 'done') return { status: 'done' as const };
 
-  const compScenarios = await db
-    .select()
-    .from(scenarios)
-    .where(eq(scenarios.comparisonId, comparisonId))
-    .orderBy(scenarios.position);
-
-  const compCandidates = await db
-    .select()
-    .from(candidates)
-    .where(eq(candidates.comparisonId, comparisonId));
-
-  const catalog = getCatalog();
-
-  // Set status to testing
-  await db.update(comparisons).set({ status: 'testing', updatedAt: new Date() }).where(eq(comparisons.id, comparisonId));
-
-  // 1. Run all candidate models against scenarios
-  const allAnswersByModel: Record<string, any[]> = {};
-
-  for (const cand of compCandidates) {
-    const catalogModel = catalog.find((m) => m.id === cand.modelId) || {
-      id: cand.modelId,
-      name: cand.modelId,
-      provider: 'AI Provider',
-      tier: cand.tier,
-      categories: ['support_chat'],
-      priorScores: {},
-      languages: ['en'],
-      contextLength: 128000,
-      modalities: ['text'],
-      inputPricePerMTok: cand.inputPriceSnapshot,
-      outputPricePerMTok: cand.outputPriceSnapshot,
-      whereToBuy: [],
-      sourceUrl: '',
-      active: true,
-    };
-
-    allAnswersByModel[cand.modelId] = [];
-
-    for (const sc of compScenarios) {
-      const ans = await runCandidateScenario({
-        candidate: catalogModel,
-        scenario: {
-          id: sc.id,
-          position: sc.position,
-          prompt: sc.prompt,
-          rubric: sc.rubric,
-          source: sc.source as 'ai' | 'founder',
-        },
-        businessSummary: comp.domainProfile?.businessSummary || comp.description,
-        conversationLength: comp.conversationLength as ConversationLength,
-      });
-
-      allAnswersByModel[cand.modelId].push(ans);
-
-      // Save answer in DB
-      await db.insert(arenaAnswers).values({
-        candidateId: cand.id,
-        scenarioId: sc.id,
-        status: ans.status,
-        answer: ans.answer,
-        inputTokens: ans.inputTokens,
-        outputTokens: ans.outputTokens,
-        latencyMs: ans.latencyMs,
-      });
-    }
+  // Deduplicate concurrent executions (e.g. React StrictMode double-mount or tab reload)
+  const existingRun = activeArenaRuns.get(comparisonId);
+  if (existingRun) {
+    await existingRun;
+    return { status: 'done' as const };
   }
 
-  // 2. Judging: Score answers per scenario across candidates
-  await db.update(comparisons).set({ status: 'judged', updatedAt: new Date() }).where(eq(comparisons.id, comparisonId));
+  const runPromise = (async () => {
+    const compScenarios = await db
+      .select()
+      .from(scenarios)
+      .where(eq(scenarios.comparisonId, comparisonId))
+      .orderBy(scenarios.position);
 
-  const allScoredByModel: Record<string, any[]> = {};
-  compCandidates.forEach((c) => (allScoredByModel[c.modelId] = []));
+    const compCandidates = await db
+      .select()
+      .from(candidates)
+      .where(eq(candidates.comparisonId, comparisonId));
 
-  for (const sc of compScenarios) {
-    const answersForScenario = compCandidates.map((c) => {
-      return (
-        allAnswersByModel[c.modelId]?.find((a) => a.scenarioId === sc.id) || {
-          modelId: c.modelId,
-          scenarioId: sc.id,
-          scenarioPosition: sc.position,
-          answer: 'No answer',
-          inputTokens: 0,
-          outputTokens: 0,
-          latencyMs: 0,
-          status: 'failed',
+    const catalog = getCatalog();
+
+    // Set status to testing
+    await db.update(comparisons).set({ status: 'testing', updatedAt: new Date() }).where(eq(comparisons.id, comparisonId));
+
+    // 1. Run all candidate models in parallel against scenarios
+    const allAnswersByModel: Record<string, any[]> = {};
+
+    await Promise.all(
+      compCandidates.map(async (cand) => {
+        const catalogModel = catalog.find((m) => m.id === cand.modelId) || {
+          id: cand.modelId,
+          name: cand.modelId,
+          provider: 'AI Provider',
+          tier: cand.tier,
+          categories: ['support_chat'],
+          priorScores: {},
+          languages: ['en'],
+          contextLength: 128000,
+          modalities: ['text'],
+          inputPricePerMTok: cand.inputPriceSnapshot,
+          outputPricePerMTok: cand.outputPriceSnapshot,
+          whereToBuy: [],
+          sourceUrl: '',
+          active: true,
+        };
+
+        // Clear any stale answers for this candidate before inserting fresh ones
+        await db.delete(arenaAnswers).where(eq(arenaAnswers.candidateId, cand.id));
+
+        const candAnswers = [];
+        for (const sc of compScenarios) {
+          const ans = await runCandidateScenario({
+            candidate: catalogModel,
+            scenario: {
+              id: sc.id,
+              position: sc.position,
+              prompt: sc.prompt,
+              rubric: sc.rubric,
+              source: sc.source as 'ai' | 'founder',
+            },
+            businessSummary: comp.domainProfile?.businessSummary || comp.description,
+            conversationLength: comp.conversationLength as ConversationLength,
+          });
+
+          candAnswers.push(ans);
+
+          // Save answer in DB
+          await db.insert(arenaAnswers).values({
+            candidateId: cand.id,
+            scenarioId: sc.id,
+            status: ans.status,
+            answer: ans.answer,
+            inputTokens: ans.inputTokens,
+            outputTokens: ans.outputTokens,
+            latencyMs: ans.latencyMs,
+          });
         }
-      );
+
+        allAnswersByModel[cand.modelId] = candAnswers;
+      })
+    );
+
+    // 2. Judging: Score answers per scenario across candidates in parallel
+    await db.update(comparisons).set({ status: 'judged', updatedAt: new Date() }).where(eq(comparisons.id, comparisonId));
+
+    const allScoredByModel: Record<string, any[]> = {};
+    compCandidates.forEach((c) => (allScoredByModel[c.modelId] = []));
+
+    await Promise.all(
+      compScenarios.map(async (sc) => {
+        const answersForScenario = compCandidates.map((c) => {
+          return (
+            allAnswersByModel[c.modelId]?.find((a) => a.scenarioId === sc.id) || {
+              modelId: c.modelId,
+              scenarioId: sc.id,
+              scenarioPosition: sc.position,
+              answer: 'No answer',
+              inputTokens: 0,
+              outputTokens: 0,
+              latencyMs: 0,
+              status: 'failed',
+            }
+          );
+        });
+
+        const scored = await judgeScenarioAnswers({
+          scenario: {
+            id: sc.id,
+            position: sc.position,
+            prompt: sc.prompt,
+            rubric: sc.rubric,
+            source: sc.source as 'ai' | 'founder',
+          },
+          businessSummary: comp.domainProfile?.businessSummary || comp.description,
+          answers: answersForScenario,
+        });
+
+        for (const s of scored) {
+          allScoredByModel[s.modelId]?.push(s);
+          // Update arena_answers with score
+          const cand = compCandidates.find((c) => c.modelId === s.modelId);
+          if (cand) {
+            await db
+              .update(arenaAnswers)
+              .set({ score: s.score, judgeRationale: s.rationale })
+              .where(and(eq(arenaAnswers.candidateId, cand.id), eq(arenaAnswers.scenarioId, sc.id)));
+          }
+        }
+      })
+    );
+
+    // 3. Compute Metrics & Recommendations
+    const candidateMetrics = compCandidates.map((cand) => {
+      const catalogModel = catalog.find((m) => m.id === cand.modelId) || {
+        id: cand.modelId,
+        name: cand.modelId,
+        provider: 'AI Provider',
+        tier: cand.tier,
+        categories: ['support_chat'],
+        priorScores: {},
+        languages: ['en'],
+        contextLength: 128000,
+        modalities: ['text'],
+        inputPricePerMTok: cand.inputPriceSnapshot,
+        outputPricePerMTok: cand.outputPriceSnapshot,
+        whereToBuy: [],
+        sourceUrl: '',
+        active: true,
+      };
+
+      return calculateCandidateMetrics({
+        candidate: catalogModel,
+        scoredAnswers: allScoredByModel[cand.modelId] || [],
+        rawAnswers: allAnswersByModel[cand.modelId] || [],
+        conversationsPerMonth: comp.conversationsPerMonth,
+        conversationLength: comp.conversationLength as ConversationLength,
+        qualityBar: comp.domainProfile?.qualityBar || 8.0,
+      });
     });
 
-    const scored = await judgeScenarioAnswers({
-      scenario: {
-        id: sc.id,
-        position: sc.position,
-        prompt: sc.prompt,
-        rubric: sc.rubric,
-        source: sc.source as 'ai' | 'founder',
+    const recommendation = generateEvaluationRecommendation({
+      candidates: candidateMetrics,
+      profile: comp.domainProfile || {
+        industry: 'General Business',
+        taskCategory: 'support_chat',
+        businessSummary: comp.description,
+        languages: ['en'],
+        needsLongContext: false,
+        needsVision: false,
+        riskLevel: 'medium',
+        qualityBar: 8.0,
+        assumptions: [],
       },
-      businessSummary: comp.domainProfile?.businessSummary || comp.description,
-      answers: answersForScenario,
+      conversationsPerMonth: comp.conversationsPerMonth,
     });
 
-    for (const s of scored) {
-      allScoredByModel[s.modelId]?.push(s);
-      // Update arena_answers with score
-      const cand = compCandidates.find((c) => c.modelId === s.modelId);
+    // Update candidate rows in DB
+    for (const res of recommendation.allCandidates) {
+      const cand = compCandidates.find((c) => c.modelId === res.modelId);
       if (cand) {
         await db
-          .update(arenaAnswers)
-          .set({ score: s.score, judgeRationale: s.rationale })
-          .where(and(eq(arenaAnswers.candidateId, cand.id), eq(arenaAnswers.scenarioId, sc.id)));
+          .update(candidates)
+          .set({
+            status: 'done',
+            avgScore: res.avgScore,
+            passRate: res.passRate,
+            avgInputTokens: res.avgInputTokens,
+            avgOutputTokens: res.avgOutputTokens,
+            monthlyCostUsd: res.monthlyCostUsd,
+            rank: res.rank,
+            isRecommended: res.isRecommended,
+            reasons: res.reasons,
+            updatedAt: new Date(),
+          })
+          .where(eq(candidates.id, cand.id));
       }
     }
+
+    // Update Comparison to done
+    await db
+      .update(comparisons)
+      .set({
+        status: 'done',
+        judgeModelId: 'google/gemini-2.5-flash',
+        updatedAt: new Date(),
+      })
+      .where(eq(comparisons.id, comparisonId));
+  })();
+
+  activeArenaRuns.set(comparisonId, runPromise);
+  try {
+    await runPromise;
+  } finally {
+    activeArenaRuns.delete(comparisonId);
   }
 
-  // 3. Compute Metrics & Recommendations
-  const candidateMetrics = compCandidates.map((cand) => {
-    const catalogModel = catalog.find((m) => m.id === cand.modelId) || {
-      id: cand.modelId,
-      name: cand.modelId,
-      provider: 'AI Provider',
-      tier: cand.tier,
-      categories: ['support_chat'],
-      priorScores: {},
-      languages: ['en'],
-      contextLength: 128000,
-      modalities: ['text'],
-      inputPricePerMTok: cand.inputPriceSnapshot,
-      outputPricePerMTok: cand.outputPriceSnapshot,
-      whereToBuy: [],
-      sourceUrl: '',
-      active: true,
-    };
-
-    return calculateCandidateMetrics({
-      candidate: catalogModel,
-      scoredAnswers: allScoredByModel[cand.modelId] || [],
-      rawAnswers: allAnswersByModel[cand.modelId] || [],
-      conversationsPerMonth: comp.conversationsPerMonth,
-      conversationLength: comp.conversationLength as ConversationLength,
-      qualityBar: comp.domainProfile?.qualityBar || 8.0,
-    });
-  });
-
-  const recommendation = generateEvaluationRecommendation({
-    candidates: candidateMetrics,
-    profile: comp.domainProfile || {
-      industry: 'General Business',
-      taskCategory: 'support_chat',
-      businessSummary: comp.description,
-      languages: ['en'],
-      needsLongContext: false,
-      needsVision: false,
-      riskLevel: 'medium',
-      qualityBar: 8.0,
-      assumptions: [],
-    },
-    conversationsPerMonth: comp.conversationsPerMonth,
-  });
-
-  // Update candidate rows in DB
-  for (const res of recommendation.allCandidates) {
-    const cand = compCandidates.find((c) => c.modelId === res.modelId);
-    if (cand) {
-      await db
-        .update(candidates)
-        .set({
-          status: 'done',
-          avgScore: res.avgScore,
-          passRate: res.passRate,
-          avgInputTokens: res.avgInputTokens,
-          avgOutputTokens: res.avgOutputTokens,
-          monthlyCostUsd: res.monthlyCostUsd,
-          rank: res.rank,
-          isRecommended: res.isRecommended,
-          reasons: res.reasons,
-          updatedAt: new Date(),
-        })
-        .where(eq(candidates.id, cand.id));
-    }
-  }
-
-  // Update Comparison to done
-  await db
-    .update(comparisons)
-    .set({
-      status: 'done',
-      judgeModelId: 'google/gemini-2.5-flash',
-      updatedAt: new Date(),
-    })
-    .where(eq(comparisons.id, comparisonId));
-
-  redirect(`/dashboard/evaluations/${comparisonId}`);
+  revalidatePath(`/dashboard/evaluations/${comparisonId}`);
+  revalidatePath(`/c/${comparisonId}`);
+  return { status: 'done' as const };
 }
 
 export async function deleteEvaluationAction(comparisonId: string) {

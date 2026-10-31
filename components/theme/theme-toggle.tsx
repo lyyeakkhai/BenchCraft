@@ -14,7 +14,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
 
   if (!mounted) {
     return (
-      <div className={`w-8 h-8 rounded-lg border border-[#D3DDD8] bg-white/60 opacity-0 ${className}`} />
+      <div className={`w-9 h-9 rounded-input border border-rule bg-paper-2 opacity-0 ${className}`} />
     );
   }
 
@@ -26,16 +26,12 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
       onClick={toggleTheme}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className={`relative inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-colors cursor-pointer ${
-        isDark
-          ? 'bg-[#0E2421] border-[#1C3A35] text-[#E7B44A] hover:bg-[#153430]'
-          : 'bg-white border-[#D3DDD8] text-[#4B605C] hover:text-[#0A2E2B] hover:bg-stone-50'
-      } ${className}`}
+      className={`relative inline-flex items-center justify-center w-9 h-9 rounded-input border border-rule bg-paper-2 text-muted hover:text-ink hover:bg-paper-3 transition-colors cursor-pointer ${className}`}
     >
       {isDark ? (
-        <Sun className="w-4 h-4 transition-transform duration-300 rotate-0 hover:rotate-45" />
+        <Sun className="w-4 h-4 text-signal" aria-hidden="true" />
       ) : (
-        <Moon className="w-4 h-4 transition-transform duration-300 rotate-0 hover:-rotate-12" />
+        <Moon className="w-4 h-4" aria-hidden="true" />
       )}
     </button>
   );

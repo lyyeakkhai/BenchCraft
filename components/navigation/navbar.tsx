@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
-import { Menu, X, ArrowRight, Plus, LayoutDashboard, Sparkles } from 'lucide-react';
+import { Menu, X, Plus, LayoutDashboard, ShieldCheck } from 'lucide-react';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 
@@ -12,37 +12,38 @@ export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // If we are deep inside the dashboard, the dashboard has its own topbar/sidebar, but navbar is global unless we are on dashboard routes
   const isDashboardRoute = pathname.startsWith('/dashboard');
 
   const navLinks = [
     { href: '/product', label: 'Product' },
-    { href: '/how-it-works', label: 'How It Works' },
-    { href: '/case-study', label: 'Nari Case Study' },
+    { href: '/how-it-works', label: 'Methodology' },
+    { href: '/case-study', label: 'Nari Audit' },
     { href: '/pricing', label: 'Pricing' },
   ];
 
   return (
-    <header className="w-full border-b border-[#D3DDD8]/80 bg-white/80 backdrop-blur-md sticky top-0 z-50 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-        {/* Brand Lockup */}
+    <header className="w-full border-b border-rule bg-paper-2/75 backdrop-blur-2xl sticky top-0 z-50 transition-colors">
+      <div className="container h-16 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link href="/" className="hover:opacity-90 transition-opacity flex items-center gap-2">
+          <Link href="/" aria-label="BenchCraft home" className="hover:opacity-90 transition-opacity flex items-center gap-2.5">
             <BrandLogo width={140} height={32} className="h-7 w-auto" priority />
+            <span className="hidden lg:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-outlier font-semibold uppercase tracking-wider bg-accent/10 text-accent border border-accent/25">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse-dot" />
+              zdr: true
+            </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold tracking-tight text-[#4B605C]">
+          <nav aria-label="Primary" className="hidden md:flex items-center gap-1 text-sm text-muted">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`transition-colors py-1 ${
+                  className={`px-3 py-1.5 rounded-input transition-all whitespace-nowrap ${
                     isActive
-                      ? 'text-[#0A2E2B] font-bold border-b-2 border-[#0A2E2B]'
-                      : 'hover:text-[#0A2E2B]'
+                      ? 'text-ink font-semibold bg-paper-3/80 border border-rule'
+                      : 'hover:text-ink hover:bg-paper-3/40'
                   }`}
                 >
                   {link.label}
@@ -52,20 +53,19 @@ export function Navbar() {
           </nav>
         </div>
 
-        {/* Right Section: Auth & Action CTA */}
         <div className="hidden sm:flex items-center gap-3">
           <ThemeToggle />
 
           <Show when="signed-out">
             <div className="flex items-center gap-2">
               <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
-                <button className="text-xs font-semibold text-[#4B605C] hover:text-[#0A2E2B] px-3 py-1.5 transition-colors cursor-pointer">
-                  Sign In
+                <button type="button" className="text-sm font-medium text-muted hover:text-ink px-3 py-2 transition-colors cursor-pointer whitespace-nowrap">
+                  Sign in
                 </button>
               </SignInButton>
               <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
-                <button className="text-xs font-semibold bg-[#0A2E2B] text-white px-3.5 py-1.5 rounded-lg hover:bg-[#1F5C55] transition cursor-pointer shadow-xs">
-                  Get Started
+                <button type="button" className="btn-ledger btn-sm">
+                  Start evaluation
                 </button>
               </SignUpButton>
             </div>
@@ -75,21 +75,21 @@ export function Navbar() {
             <div className="flex items-center gap-3">
               <Link
                 href="/dashboard"
-                className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+                className={`text-sm px-3 py-1.5 rounded-input transition-colors flex items-center gap-1.5 whitespace-nowrap ${
                   isDashboardRoute
-                    ? 'bg-[#EDF2EF] text-[#0A2E2B]'
-                    : 'text-[#4B605C] hover:text-[#0A2E2B]'
+                    ? 'bg-paper-3 text-ink font-semibold'
+                    : 'text-muted hover:text-ink'
                 }`}
               >
-                <LayoutDashboard className="w-3.5 h-3.5" />
+                <LayoutDashboard className="w-4 h-4" aria-hidden="true" />
                 Dashboard
               </Link>
               <Link
                 href="/dashboard/evaluations/new"
-                className="btn-ledger text-xs py-1.5 px-3 rounded-lg"
+                className="btn-ledger btn-sm"
               >
-                <Plus className="w-3.5 h-3.5" />
-                New Evaluation
+                <Plus className="w-4 h-4" aria-hidden="true" />
+                New evaluation
               </Link>
               <div className="pl-1">
                 <UserButton
@@ -104,7 +104,6 @@ export function Navbar() {
           </Show>
         </div>
 
-        {/* Mobile Hamburger Button */}
         <div className="flex sm:hidden items-center gap-2">
           <ThemeToggle />
           <Show when="signed-in">
@@ -119,27 +118,26 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-1.5 text-[#0A2E2B] hover:bg-[#EDF2EF] rounded-lg transition"
-            aria-label="Toggle Navigation Menu"
+            className="p-2 text-ink hover:bg-paper-3 rounded-input transition-colors"
+            aria-label="Toggle navigation menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="sm:hidden border-t border-[#D3DDD8] bg-white/95 backdrop-blur-md px-4 py-4 space-y-3">
-          <nav className="flex flex-col space-y-2">
+        <div className="sm:hidden border-t border-rule bg-paper-2/95 backdrop-blur-2xl px-4 py-4 space-y-3">
+          <nav aria-label="Mobile" className="flex flex-col space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`text-sm font-semibold px-3 py-2 rounded-lg transition ${
+                className={`text-md px-3 py-2 rounded-input transition-colors ${
                   pathname === link.href
-                    ? 'bg-[#EDF2EF] text-[#0A2E2B]'
-                    : 'text-[#4B605C] hover:bg-stone-50'
+                    ? 'bg-paper-3 text-ink font-semibold'
+                    : 'text-muted hover:bg-paper'
                 }`}
               >
                 {link.label}
@@ -147,22 +145,24 @@ export function Navbar() {
             ))}
           </nav>
 
-          <div className="pt-3 border-t border-[#D3DDD8] flex flex-col gap-2">
+          <div className="pt-3 border-t border-rule flex flex-col gap-2">
             <Show when="signed-out">
               <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
                 <button
+                  type="button"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2 text-xs font-semibold text-[#0A2E2B] border border-[#D3DDD8] rounded-lg hover:bg-[#EDF2EF]"
+                  className="btn-ledger-ghost btn-sm w-full"
                 >
-                  Sign In
+                  Sign in
                 </button>
               </SignInButton>
               <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
                 <button
+                  type="button"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2 text-xs font-semibold text-white bg-[#0A2E2B] rounded-lg hover:bg-[#1F5C55]"
+                  className="btn-ledger btn-sm w-full"
                 >
-                  Get Started
+                  Start evaluation
                 </button>
               </SignUpButton>
             </Show>
@@ -170,16 +170,16 @@ export function Navbar() {
               <Link
                 href="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2 text-xs font-semibold text-[#0A2E2B] bg-[#EDF2EF] rounded-lg"
+                className="btn-ledger-ghost btn-sm w-full"
               >
-                Go to Dashboard
+                Dashboard
               </Link>
               <Link
                 href="/dashboard/evaluations/new"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2 text-xs font-semibold text-white bg-[#0A2E2B] rounded-lg"
+                className="btn-ledger btn-sm w-full"
               >
-                + Start Evaluation
+                New evaluation
               </Link>
             </Show>
           </div>

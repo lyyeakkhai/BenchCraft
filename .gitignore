@@ -25,6 +25,7 @@
 *.pem
 .agents/
 .claude/
+.hallmark/
 
 # debug
 npm-debug.log*

@@ -7,6 +7,7 @@ import { requireUser } from '@/lib/auth';
 import { ArrowLeft } from 'lucide-react';
 import { ReportPrintTrigger } from './report-print-trigger';
 import { BrandLogo } from '@/components/brand/brand-logo';
+import { ProviderLogo } from '@/components/brand/provider-logo';
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -51,120 +52,123 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 py-6 print:py-0 print:max-w-none bg-white p-8 rounded-2xl border border-[#D3DDD8] shadow-xs">
-      {/* Print Controls (Hidden on print) */}
-      <div className="flex items-center justify-between border-b border-[#D3DDD8] pb-4 print:hidden">
+    <div className="max-w-4xl mx-auto space-y-8 py-6 print:py-0 print:max-w-none ledger-surface p-8">
+      <div className="flex items-center justify-between border-b border-rule pb-4 print:hidden">
         <Link
           href={`/dashboard/evaluations/${id}`}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0A2E2B] hover:text-[#1F5C55]"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:text-accent whitespace-nowrap"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to Decision Dashboard
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back to decision dashboard
         </Link>
         <ReportPrintTrigger />
       </div>
 
-      {/* Report Document Header */}
-      <div className="flex items-center justify-between border-b-2 border-[#0A2E2B] pb-6">
+      <div className="flex items-center justify-between border-b-2 border-ink pb-6">
         <div>
           <div className="mb-3">
             <BrandLogo width={140} height={32} className="h-8 w-auto" />
           </div>
-          <h1 className="text-2xl font-serif font-semibold text-[#0A2E2B]">Executive Evaluation Report</h1>
-          <p className="text-xs text-[#4B605C] mt-0.5">
-            Prepared for: <strong>{comp.title}</strong> · {comp.domainProfile?.industry || 'Business Evaluation'}
+          <h1 className="text-2xl font-display font-semibold text-ink">Executive evaluation report</h1>
+          <p className="text-sm text-muted mt-0.5">
+            Prepared for: <strong>{comp.title}</strong> ({comp.domainProfile?.industry || 'Business evaluation'})
           </p>
         </div>
-        <div className="text-right text-xs text-[#4B605C] space-y-0.5">
-          <div>Report Date: {new Date().toLocaleDateString()}</div>
-          <div>Monthly Volume: {comp.conversationsPerMonth.toLocaleString()} convs</div>
+        <div className="text-right text-xs text-muted space-y-0.5 num">
+          <div>Report date: {new Date().toLocaleDateString()}</div>
+          <div>Monthly volume: {comp.conversationsPerMonth.toLocaleString()} convs</div>
           <div>Turns per interaction: {comp.conversationLength}</div>
         </div>
       </div>
 
-      {/* Executive Summary */}
-      <section className="bg-[#EDF2EF] border border-[#D3DDD8] rounded-xl p-6 space-y-3">
-        <div className="text-xs font-semibold uppercase tracking-wider text-[#B87A14]">
-          Executive Recommendation
-        </div>
+      <section className="ledger-well p-6 space-y-3">
         <div className="flex items-start justify-between gap-6">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-serif font-semibold text-[#0A2E2B]">
-              {recommended?.name} ({recommended?.provider})
-            </h2>
-            <p className="text-xs text-[#4B605C]">
-              Optimal right-sized model. Cleared the target quality threshold while eliminating excessive operational spend on frontier-tier models.
-            </p>
+          <div className="flex items-center gap-4">
+            <ProviderLogo provider={recommended?.provider || recommended?.name} size="lg" />
+            <div className="space-y-1">
+              <h2 className="text-2xl font-display font-semibold text-ink">
+                {recommended?.name}
+              </h2>
+              <p className="text-xs font-semibold text-muted font-outlier uppercase tracking-wider">
+                {recommended?.provider} · Optimal right-sized model
+              </p>
+            </div>
           </div>
           {savingMonthly > 0 && (
-            <div className="text-right">
-              <div className="text-xs text-[#4B605C] font-medium">Estimated Monthly Savings</div>
-              <div className="text-2xl font-serif font-semibold text-[#8A5A0B]">${savingMonthly.toLocaleString()} / mo</div>
-              <div className="text-[11px] text-[#4B605C]">${(savingMonthly * 12).toLocaleString()} / year savings</div>
+            <div className="text-right num">
+              <div className="text-xs text-muted font-medium">Estimated monthly savings</div>
+              <div className="text-2xl font-display font-bold text-signal">${savingMonthly.toLocaleString()} / mo</div>
+              <div className="text-xs text-muted">${(savingMonthly * 12).toLocaleString()} / year savings</div>
             </div>
           )}
         </div>
 
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 text-xs text-[#0A2E2B]">
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 text-xs text-ink list-disc pl-4">
           {(recommended?.reasons || []).map((r: string, i: number) => (
-            <li key={i} className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#1F5C55]" /> {r}
-            </li>
+            <li key={i}>{r}</li>
           ))}
         </ul>
       </section>
 
-      {/* Comparison Table */}
       <section className="space-y-3">
-        <h3 className="text-base font-serif font-semibold text-[#0A2E2B]">Top 3 Models Benchmark Comparison</h3>
-        <table className="w-full text-left text-xs border border-[#D3DDD8] rounded-lg overflow-hidden">
-          <thead className="bg-[#0A2E2B] text-white">
-            <tr>
-              <th className="p-3">Rank</th>
-              <th className="p-3">Model</th>
-              <th className="p-3">Tier</th>
-              <th className="p-3">Domain Fit</th>
-              <th className="p-3">Pass Rate</th>
-              <th className="p-3">Monthly Cost</th>
-              <th className="p-3">Cost / 1k Convs</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#D3DDD8]">
-            {top3.map((cand, idx) => (
-              <tr key={cand.id} className={cand.isRecommended ? 'bg-[#FBF3E2] font-semibold' : 'bg-white'}>
-                <td className="p-3">{idx + 1} {cand.isRecommended && '★'}</td>
-                <td className="p-3 font-semibold text-[#0A2E2B]">{cand.name}</td>
-                <td className="p-3 capitalize">{cand.tier}</td>
-                <td className="p-3 text-[#1F5C55] font-semibold">{Math.round((cand.avgScore || 0) * 10)} / 100</td>
-                <td className="p-3">{Math.round((cand.passRate || 0) * 100)}%</td>
-                <td className="p-3 font-semibold text-[#0A2E2B]">${cand.monthlyCostUsd?.toLocaleString()} / mo</td>
-                <td className="p-3 text-[#4B605C]">
-                  ${cand.monthlyCostUsd ? ((cand.monthlyCostUsd / comp.conversationsPerMonth) * 1000).toFixed(2) : '0.00'}
-                </td>
+        <h3 className="text-title font-display font-semibold text-ink">Top 3 models benchmark comparison</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead className="bg-ink text-paper-2">
+              <tr>
+                <th className="p-3 whitespace-nowrap">Rank</th>
+                <th className="p-3 whitespace-nowrap">Model</th>
+                <th className="p-3 whitespace-nowrap">Tier</th>
+                <th className="p-3 whitespace-nowrap">Domain fit</th>
+                <th className="p-3 whitespace-nowrap">Pass rate</th>
+                <th className="p-3 whitespace-nowrap">Monthly cost</th>
+                <th className="p-3 whitespace-nowrap">Cost / 1k convs</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-rule num">
+              {top3.map((cand, idx) => (
+                <tr key={cand.id} className={cand.isRecommended ? 'bg-signal-bg font-semibold' : 'bg-paper'}>
+                  <td className="p-3">{idx + 1}</td>
+                  <td className="p-3 font-semibold text-ink">
+                    <div className="flex items-center gap-2">
+                      <ProviderLogo provider={cand.provider || cand.name} size="xs" />
+                      <span>{cand.name}</span>
+                    </div>
+                  </td>
+                  <td className="p-3 capitalize">{cand.tier}</td>
+                  <td className="p-3 text-accent font-semibold">{Math.round((cand.avgScore || 0) * 10)} / 100</td>
+                  <td className="p-3">{Math.round((cand.passRate || 0) * 100)}%</td>
+                  <td className="p-3 font-semibold text-ink">${cand.monthlyCostUsd?.toLocaleString()} / mo</td>
+                  <td className="p-3 text-muted">
+                    ${cand.monthlyCostUsd ? ((cand.monthlyCostUsd / comp.conversationsPerMonth) * 1000).toFixed(2) : '0.00'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
-      {/* Procurement & Deployment Guidance */}
       <section className="space-y-2 pt-2">
-        <h3 className="text-base font-serif font-semibold text-[#0A2E2B]">Where to Procure & Deploy Recommended Model</h3>
-        <p className="text-xs text-[#4B605C]">
+        <h3 className="text-title font-display font-semibold text-ink">Where to procure and deploy recommended model</h3>
+        <p className="text-xs text-muted">
           The recommended model ({recommended?.name}) is available at official rates via standard provider endpoints:
         </p>
         <div className="flex flex-wrap gap-2 pt-1">
           {(recommended?.whereToBuy || []).map((shop: { name: string; url: string }, i: number) => (
-            <span key={i} className="px-3 py-1.5 bg-[#EDF2EF] border border-[#D3DDD8] rounded text-xs text-[#0A2E2B] font-semibold">
-              {shop.name} ({shop.url})
+            <span key={i} className="inline-flex items-center gap-1.5 pill font-semibold text-ink">
+              <ProviderLogo provider={shop.name} size="xs" />
+              <span>{shop.name}</span>
             </span>
           ))}
         </div>
       </section>
 
-      {/* Footer / Certification */}
-      <div className="border-t border-[#D3DDD8] pt-4 text-[10px] text-[#4B605C] flex items-center justify-between">
-        <div>Certified by BenchCraft Evaluation Engine · OpenRouter Gateway</div>
-        <div>Confidential & Proprietary Evaluation Report</div>
+      <div className="border-t border-rule pt-4 text-xs text-muted flex items-center justify-between">
+        <div className="inline-flex items-center gap-2">
+          <ProviderLogo provider="openrouter" size="xs" />
+          <span>Certified by BenchCraft Evaluation Engine, OpenRouter Gateway</span>
+        </div>
+        <div>Confidential evaluation report</div>
       </div>
     </div>
   );

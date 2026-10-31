@@ -7,25 +7,21 @@ import { Footer } from './footer';
 export function AppShellProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // Full-screen SaaS Dashboard & Evaluation flow:
-  // Edge-to-edge workspace, no marketing navbar, no marketing footer
   const isDashboard = pathname.startsWith('/dashboard');
   const isPrintReport = pathname.includes('/report');
 
   if (isDashboard || isPrintReport) {
-    return <div className="h-screen w-screen overflow-hidden flex flex-col">{children}</div>;
+    return <div className="h-screen w-full overflow-hidden flex flex-col bg-paper text-ink">{children}</div>;
   }
 
-  // Legacy evaluation redirect routes (/c/*)
   if (pathname.startsWith('/c/')) {
-    return <div className="min-h-screen flex flex-col">{children}</div>;
+    return <div className="min-h-screen flex flex-col bg-paper text-ink">{children}</div>;
   }
 
-  // Marketing pages (/, /product, /how-it-works, /pricing, /case-study)
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-paper text-ink">
       <Navbar />
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-10">{children}</main>
+      <main id="main" className="flex-1 container py-10">{children}</main>
       <Footer />
     </div>
   );

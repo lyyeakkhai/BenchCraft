@@ -39,19 +39,17 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="space-y-6">
-      {/* Step Progress Bar */}
-      <div className="rounded-xl overflow-hidden border border-[#D3DDD8] shadow-xs">
+      <div className="rounded-card overflow-hidden border border-rule">
         <Stepper currentStep={2} businessTitle={comp.title} />
       </div>
 
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-serif font-semibold tracking-[-0.01em] text-[#0A2E2B]">
-            Review Domain Understanding & Test Scenarios
+          <h1 className="text-3xl font-display font-semibold text-ink">
+            Review domain understanding and test scenarios
           </h1>
-          <p className="text-sm text-[#4B605C] mt-1">
-            We formulated {compScenarios.length} grounded scenarios from your description and business documents.
-            Review the questions and grading rubrics before the blinded arena comparison.
+          <p className="text-sm text-muted mt-1 num">
+            We formulated {compScenarios.length} grounded scenarios from your description and business documents. Review the questions and grading rubrics before the blinded arena comparison.
           </p>
         </div>
 

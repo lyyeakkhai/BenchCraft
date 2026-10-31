@@ -35,8 +35,7 @@ export default async function ArenaPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Stepper */}
-      <div className="rounded-xl overflow-hidden border border-[#D3DDD8] shadow-xs">
+      <div className="rounded-card overflow-hidden border border-rule">
         <Stepper currentStep={2} businessTitle={comp.title} />
       </div>
 
