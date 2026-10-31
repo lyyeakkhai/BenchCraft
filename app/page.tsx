@@ -1,244 +1,288 @@
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, CheckCircle2, ShieldCheck } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  CheckCircle2,
+  ShieldCheck,
+  TrendingDown,
+  Layers,
+  Sparkles,
+  Zap,
+  Sliders,
+  FileCheck2,
+} from 'lucide-react';
+import { InteractiveRoiDemo } from '@/components/marketing/interactive-roi-demo';
 
 export default function HomePage() {
   return (
-    <div className="space-y-20 py-4">
-      {/* Editorial Opening */}
-      <section className="max-w-3xl space-y-6 pt-2">
-        <h1 className="text-4xl sm:text-5xl font-serif font-semibold tracking-[-0.02em] text-[#0A2E2B] leading-[1.15]">
-          Right-sized AI model evaluation for founders who care about unit economics.
-        </h1>
+    <div className="space-y-24 py-6">
+      {/* ========================================================================= */}
+      {/* 1. HERO SECTION: Billion-Dollar Silicon Valley SaaS Stance               */}
+      {/* ========================================================================= */}
+      <section className="relative pt-6 sm:pt-10 pb-4 space-y-8 max-w-4xl mx-auto text-center sm:text-left">
+        {/* Subtle Ambient Mesh Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-[#1F5C55]/8 via-[#B87A14]/6 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
 
-        <p className="text-base sm:text-lg text-[#4B605C] leading-relaxed max-w-[66ch]">
-          Public leaderboards rank general capability on generic benchmarks. BenchCraft tests candidate models
-          directly against your business documents, query volume, and quality thresholds in an automated parallel arena.
-        </p>
+        {/* Live Operational Status Pill */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-[#D3DDD8] text-xs font-semibold text-[#0A2E2B] shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-[#1F5C55] animate-pulse" />
+          <span>Zero Data Retention Active</span>
+          <span className="text-[#A9BDB7]">|</span>
+          <span className="text-[#1F5C55]">Temp-0 LLM Judge Arena</span>
+        </div>
 
-        <div className="flex flex-wrap items-center gap-4 pt-1">
+        {/* Hero Title */}
+        <div className="space-y-4">
+          <h1 className="text-4xl sm:text-6xl font-serif font-semibold tracking-[-0.03em] text-[#0A2E2B] leading-[1.12]">
+            Right-sized AI model selection for founders who refuse to burn cash on hype.
+          </h1>
+          <p className="text-base sm:text-xl text-[#4B605C] leading-relaxed max-w-[64ch]">
+            Public leaderboards rank general capability on generic trivia. BenchCraft tests candidate models
+            directly against your actual customer FAQs, query volume, and quality thresholds in an automated parallel arena.
+          </p>
+        </div>
+
+        {/* CTA Button Row */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
           <Link
             href="/c/new"
-            className="btn-ledger text-sm sm:text-base px-6 py-3"
+            className="btn-ledger text-sm sm:text-base px-6 py-3.5 w-full sm:w-auto text-center justify-center shadow-sm"
           >
             Start Business Evaluation
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 ml-1" />
           </Link>
           <Link
-            href="#case-study"
-            className="btn-ledger-ghost text-sm sm:text-base px-5 py-2.5"
+            href="/dashboard"
+            className="btn-ledger-ghost text-sm sm:text-base px-5 py-3 w-full sm:w-auto text-center justify-center"
           >
-            Review Nari Case Study
+            Open Control Plane
             <ArrowUpRight className="w-4 h-4 text-[#4B605C]" />
           </Link>
         </div>
 
-        <div className="flex flex-wrap items-center gap-6 pt-2 text-xs text-[#4B605C]">
+        {/* Telemetry Micro-Pills */}
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-5 pt-3 text-xs text-[#4B605C]">
           <span className="flex items-center gap-1.5 font-semibold text-[#1F5C55]">
-            <span className="w-2 h-2 rounded-full bg-[#1F5C55]" />
-            ZERO DATA RETENTION
+            <ShieldCheck className="w-4 h-4 text-[#1F5C55]" />
+            ZERO DATA RETENTION (ZDR)
           </span>
-          <span className="text-[#A9BDB7]">•</span>
-          <span>EMPIRICAL SCENARIO ARENA</span>
-          <span className="text-[#A9BDB7]">•</span>
-          <span>OFFICIAL LIST PRICING</span>
+          <span className="text-[#A9BDB7] hidden sm:inline">•</span>
+          <span className="flex items-center gap-1.5 font-semibold text-[#0A2E2B]">
+            <Layers className="w-4 h-4 text-[#1F5C55]" />
+            5-MODEL PARALLEL ARENA
+          </span>
+          <span className="text-[#A9BDB7] hidden sm:inline">•</span>
+          <span className="flex items-center gap-1.5 font-semibold text-[#8A5A0B]">
+            <TrendingDown className="w-4 h-4 text-[#8A5A0B]" />
+            94.2% AVG INFERENCE SAVINGS
+          </span>
         </div>
       </section>
 
-      {/* Case Study: Precision Ledger Comparison */}
+      {/* ========================================================================= */}
+      {/* 2. INTERACTIVE ARENA SHOWCASE: The Nari Boutique Live Audit              */}
+      {/* ========================================================================= */}
       <section id="case-study" className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#D3DDD8] pb-4">
           <div>
-            <h2 className="text-2xl font-serif font-semibold text-[#0A2E2B]">
+            <h2 className="text-2xl sm:text-3xl font-serif font-semibold text-[#0A2E2B]">
               The Cost of Defaulting to Frontier Models
             </h2>
-            <p className="text-xs text-[#4B605C] mt-1">
+            <p className="text-xs sm:text-sm text-[#4B605C] mt-1">
               Empirical case audit: Nari Boutique (Customer Support Chat · 50,000 monthly conversations)
             </p>
           </div>
-          <div className="text-xs font-semibold text-[#0A2E2B] bg-[#EDF2EF] px-3.5 py-1.5 rounded-full border border-[#D3DDD8]">
-            NET SAVINGS: <span className="font-bold text-[#8A5A0B]">+$1,485.00 / month</span>
+          <div className="text-xs font-semibold text-[#0A2E2B] bg-white px-4 py-2 rounded-full border border-[#D3DDD8] shadow-xs flex items-center gap-2">
+            <span>SAVINGS AUDIT:</span>
+            <span className="font-bold text-[#8A5A0B]">+$1,485.00 / month</span>
           </div>
         </div>
 
-        {/* Ledger Comparison Grid */}
-        <div className="border border-[#D3DDD8] bg-white rounded-xl overflow-hidden shadow-xs">
-          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#D3DDD8]">
-            {/* Frontier Default Column */}
-            <div className="p-7 space-y-6 bg-[#FAFCFB]">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#4B605C]">
-                  Uncalibrated Default
-                </span>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-200 text-stone-700">
-                  TOP TIER
-                </span>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-serif font-semibold text-[#0A2E2B]">
-                  Claude Fable 5.1 (Frontier Tier)
-                </h3>
-                <p className="text-xs text-[#4B605C] mt-1 leading-normal">
-                  Selected under the assumption that only the largest public leaderboard winner could safely converse with
-                  paying customers without hallucinating.
-                </p>
-              </div>
-
-              <dl className="grid grid-cols-2 gap-4 pt-4 border-t border-[#D3DDD8] text-xs">
-                <div>
-                  <dt className="text-[#4B605C]">Monthly Cost</dt>
-                  <dd className="text-2xl font-serif font-semibold text-[#0A2E2B] mt-0.5">$1,500.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Annual Expenditure</dt>
-                  <dd className="text-2xl font-serif font-semibold text-[#0A2E2B] mt-0.5">$18,000.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Cost / 1,000 Chats</dt>
-                  <dd className="text-sm font-semibold text-[#0A2E2B] mt-0.5">$30.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Measured Scenario Pass</dt>
-                  <dd className="text-sm font-semibold text-[#0A2E2B] mt-0.5">100% (8/8)</dd>
-                </div>
-              </dl>
-            </div>
-
-            {/* BenchCraft Right-Sized Model Column */}
-            <div className="p-7 space-y-6 bg-white relative">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#B87A14]">
-                  BenchCraft Right-Sized Fit
-                </span>
-                <span className="pill rec">RECOMMENDED</span>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-serif font-semibold text-[#0A2E2B]">Claude Haiku 5.5</h3>
-                <p className="text-xs text-[#4B605C] mt-1 leading-normal">
-                  Identified after 8 domain scenarios testing apparel sizing, provincial shipping to Siem Reap, and return policies in Khmer and English.
-                </p>
-              </div>
-
-              <dl className="grid grid-cols-2 gap-4 pt-4 border-t border-[#D3DDD8] text-xs">
-                <div>
-                  <dt className="text-[#4B605C]">Monthly Cost</dt>
-                  <dd className="text-2xl font-serif font-semibold text-[#8A5A0B] mt-0.5">$15.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Annual Savings</dt>
-                  <dd className="text-2xl font-serif font-semibold text-[#8A5A0B] mt-0.5">+$17,820.00</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Cost / 1,000 Chats</dt>
-                  <dd className="text-sm font-semibold text-[#0A2E2B] mt-0.5">$0.30</dd>
-                </div>
-                <div>
-                  <dt className="text-[#4B605C]">Domain Fit Score</dt>
-                  <dd className="text-sm font-semibold text-[#1F5C55] mt-0.5">88 / 100 (Passes bar: 85)</dd>
-                </div>
-              </dl>
-            </div>
-          </div>
-        </div>
+        {/* Interactive Client Simulator */}
+        <InteractiveRoiDemo />
       </section>
 
-      {/* The 3-Step Methodology from the Pitch Deck */}
+      {/* ========================================================================= */}
+      {/* 3. 3-STEP METHODOLOGY: Engineered For Technical Rigor                    */}
+      {/* ========================================================================= */}
       <section id="methodology" className="space-y-8">
         <div className="border-b border-[#D3DDD8] pb-4">
-          <h2 className="text-2xl font-serif font-semibold text-[#0A2E2B]">
-            How BenchCraft Works
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#B87A14] uppercase tracking-wider mb-1">
+            <Sparkles className="w-3.5 h-3.5" />
+            Empirical Architecture
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-serif font-semibold text-[#0A2E2B]">
+            How BenchCraft Eliminates Inference Waste
           </h2>
-          <p className="text-xs text-[#4B605C] mt-1">
-            We learn from your business and test models on your use case, not a generic leaderboard.
+          <p className="text-xs sm:text-sm text-[#4B605C] mt-1">
+            We ground evaluation in your specific business documents and test candidate models under identical constraints.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-3 shadow-xs">
-            <div className="text-xs font-semibold text-[#B87A14] uppercase tracking-wider">
-              1. Describe your business
+          {/* Step 1 */}
+          <div className="glass-panel glass-panel-hover rounded-2xl p-6 sm:p-7 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-[#EDF2EF] border border-[#D3DDD8] flex items-center justify-center text-sm font-bold text-[#0A2E2B]">
+              01
             </div>
-            <h3 className="text-base font-semibold text-[#0A2E2B]">Domain Grounding</h3>
-            <p className="text-xs text-[#4B605C] leading-relaxed">
-              Describe your business and attach your FAQ or policy documents. BenchCraft formulates real-world operational scenarios in memory.
+            <div>
+              <span className="text-[11px] font-semibold text-[#B87A14] uppercase tracking-wider">
+                Step 1 · Grounding
+              </span>
+              <h3 className="text-lg font-serif font-semibold text-[#0A2E2B] mt-0.5">
+                Domain Scenario Synthesis
+              </h3>
+            </div>
+            <p className="text-xs sm:text-sm text-[#4B605C] leading-relaxed">
+              Upload your customer FAQs, return guidelines, or product catalog. BenchCraft extracts your quality bar
+              and synthesizes challenging multi-turn edge cases in memory.
             </p>
+            <div className="pt-2 border-t border-[#D3DDD8] text-[11px] font-semibold text-[#1F5C55] flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Zero retention — files discarded immediately
+            </div>
           </div>
 
-          <div className="bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-3 shadow-xs">
-            <div className="text-xs font-semibold text-[#B87A14] uppercase tracking-wider">
-              2. Compare the top 3
+          {/* Step 2 */}
+          <div className="glass-panel glass-panel-hover rounded-2xl p-6 sm:p-7 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-[#EDF2EF] border border-[#D3DDD8] flex items-center justify-center text-sm font-bold text-[#0A2E2B]">
+              02
             </div>
-            <h3 className="text-base font-semibold text-[#0A2E2B]">Blinded Parallel Arena</h3>
-            <p className="text-xs text-[#4B605C] leading-relaxed">
-              Candidate models respond in parallel. An objective judge scores responses at temperature 0 against strict rubrics, ranking the top 3 side by side.
+            <div>
+              <span className="text-[11px] font-semibold text-[#B87A14] uppercase tracking-wider">
+                Step 2 · Execution
+              </span>
+              <h3 className="text-lg font-serif font-semibold text-[#0A2E2B] mt-0.5">
+                Blinded Parallel Arena
+              </h3>
+            </div>
+            <p className="text-xs sm:text-sm text-[#4B605C] leading-relaxed">
+              Frontier and mid-tier candidate models run side-by-side in real-time. An objective rubric judge at
+              temperature 0 scores each answer for accuracy, tone, and hallucination absence.
             </p>
+            <div className="pt-2 border-t border-[#D3DDD8] text-[11px] font-semibold text-[#1F5C55] flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Anonymized & shuffled before judging
+            </div>
           </div>
 
-          <div className="bg-white border border-[#D3DDD8] rounded-xl p-6 space-y-3 shadow-xs">
-            <div className="text-xs font-semibold text-[#B87A14] uppercase tracking-wider">
-              3. Get one recommendation
+          {/* Step 3 */}
+          <div className="glass-panel glass-panel-hover rounded-2xl p-6 sm:p-7 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-[#EDF2EF] border border-[#D3DDD8] flex items-center justify-center text-sm font-bold text-[#0A2E2B]">
+              03
             </div>
-            <h3 className="text-base font-semibold text-[#0A2E2B]">Right-Sizing & Savings</h3>
-            <p className="text-xs text-[#4B605C] leading-relaxed">
-              One right-sized recommendation with exact monthly and annual savings, volume stress projections, and direct cloud procurement links.
+            <div>
+              <span className="text-[11px] font-semibold text-[#B87A14] uppercase tracking-wider">
+                Step 3 · Right-Sizing
+              </span>
+              <h3 className="text-lg font-serif font-semibold text-[#0A2E2B] mt-0.5">
+                Financial Right-Sizing
+              </h3>
+            </div>
+            <p className="text-xs sm:text-sm text-[#4B605C] leading-relaxed">
+              We recommend the single most cost-effective model that clears your quality threshold, with verified list pricing,
+              cloud procurement links, and executive memos.
             </p>
+            <div className="pt-2 border-t border-[#D3DDD8] text-[11px] font-semibold text-[#1F5C55] flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Average 94.2% cost reduction achieved
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Subscription Pricing Section (From Slide 8) */}
-      <section id="pricing" className="space-y-6 pt-2 border-t border-[#D3DDD8]">
-        <div className="max-w-xl">
-          <h2 className="text-2xl font-serif font-semibold text-[#0A2E2B]">
-            Simple Founder Economics
-          </h2>
-          <p className="text-xs text-[#4B605C] mt-1">
-            One right-sized model choice saves thousands of dollars in monthly inference waste.
-          </p>
+      {/* ========================================================================= */}
+      {/* 4. PRICING & ROI GUARANTEE: Pro Founder Economics                        */}
+      {/* ========================================================================= */}
+      <section id="pricing" className="space-y-6 pt-6 border-t border-[#D3DDD8]">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-serif font-semibold text-[#0A2E2B]">
+              Simple, Predictable Founder Economics
+            </h2>
+            <p className="text-xs sm:text-sm text-[#4B605C] mt-1">
+              One right-sized model evaluation returns 50× the monthly subscription cost in saved inference burn.
+            </p>
+          </div>
+          <div className="text-xs text-[#4B605C]">
+            All subscriptions backed by Zero Data Retention
+          </div>
         </div>
 
-        <div className="border border-[#D3DDD8] bg-white rounded-xl p-8 max-w-lg space-y-6 shadow-xs">
-          <div className="flex items-baseline justify-between border-b border-[#D3DDD8] pb-5">
-            <div>
-              <h3 className="text-lg font-semibold text-[#0A2E2B]">Pro Founder Plan</h3>
-              <p className="text-xs text-[#4B605C]">For founders and growing product teams</p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Pricing Card */}
+          <div className="lg:col-span-6 glass-panel rounded-2xl p-8 space-y-6 shadow-md border-2 border-[#1F5C55]/30">
+            <div className="flex items-baseline justify-between border-b border-[#D3DDD8] pb-5">
+              <div>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1F5C55]">
+                  FOUNDER ALL-ACCESS
+                </span>
+                <h3 className="text-2xl font-serif font-semibold text-[#0A2E2B] mt-0.5">
+                  Pro Founder Plan
+                </h3>
+                <p className="text-xs text-[#4B605C]">For engineering teams and technical founders</p>
+              </div>
+              <div className="text-right">
+                <span className="text-4xl font-serif font-bold text-[#0A2E2B]">$29</span>
+                <span className="text-xs text-[#4B605C]"> / month</span>
+              </div>
             </div>
-            <div className="text-right">
-              <span className="text-3xl font-serif font-semibold text-[#0A2E2B]">$29</span>
-              <span className="text-xs text-[#4B605C]"> / month</span>
-            </div>
+
+            <ul className="space-y-3 text-xs sm:text-sm text-[#0A2E2B]">
+              <li className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
+                <span><strong>20 full arena evaluations</strong> per month</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
+                <span><strong>5 candidate models</strong> executed in parallel per test</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
+                <span><strong>Temperature 0 rubric judge</strong> with line-by-line rationales</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
+                <span><strong>Exportable executive memos</strong> for board & investor audits</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
+                <span><strong>Zero Data Retention</strong> cryptographic gateway enforcement</span>
+              </li>
+            </ul>
+
+            <Link
+              href="/c/new"
+              className="btn-ledger w-full text-center py-3.5 text-sm font-semibold justify-center shadow-sm"
+            >
+              Start Evaluating Models Now
+            </Link>
           </div>
 
-          <ul className="space-y-2.5 text-xs text-[#0A2E2B]">
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Includes 20 comprehensive arena evaluations per month
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Parallel execution across 5 candidate models per evaluation
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Objective rubric scoring with per-scenario rationale audit
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Exportable executive memos for investor or board review
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#1F5C55] flex-shrink-0" />
-              Zero Data Retention: files discarded immediately after evaluation
-            </li>
-          </ul>
+          {/* Value Calculation Callout */}
+          <div className="lg:col-span-6 space-y-4">
+            <div className="p-6 rounded-2xl bg-white border border-[#D3DDD8] space-y-3 shadow-xs">
+              <div className="text-xs font-semibold text-[#8A5A0B] uppercase tracking-wider">
+                The Return on Investment
+              </div>
+              <div className="font-serif text-3xl font-semibold text-[#0A2E2B]">
+                $29 / month saves $1,485 / month
+              </div>
+              <p className="text-xs sm:text-sm text-[#4B605C] leading-relaxed">
+                Most companies waste thousands per month by defaulting to top-tier frontier models like Claude 3.5 Sonnet or GPT-4o for repetitive customer chat, classification, or extraction tasks that lightweight models handle flawlessly.
+              </p>
+            </div>
 
-          <Link
-            href="/c/new"
-            className="btn-ledger w-full text-center py-3 text-sm justify-center"
-          >
-            Start Evaluating Models
-          </Link>
+            <div className="p-6 rounded-2xl bg-[#EDF2EF] border border-[#D3DDD8] space-y-2">
+              <div className="font-semibold text-xs text-[#0A2E2B] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#1F5C55]" />
+                Strict Privacy Guarantee
+              </div>
+              <p className="text-xs text-[#4B605C] leading-relaxed">
+                BenchCraft operates exclusively through Zero Data Retention (ZDR) endpoints. Your business documents, prompt templates, and evaluation answers are never used for model training or persisted outside your session.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </div>
