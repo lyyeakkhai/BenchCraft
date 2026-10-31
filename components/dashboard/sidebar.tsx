@@ -92,7 +92,7 @@ export function DashboardSidebar({ totalUsed = 1, maxLimit = 20 }: SidebarProps)
         {/* Primary Action Button */}
         <div>
           <Link
-            href="/c/new"
+            href="/dashboard/evaluations/new"
             className="btn-ledger w-full py-2.5 text-xs rounded-lg justify-center shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />

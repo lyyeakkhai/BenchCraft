@@ -31,7 +31,7 @@ export default function ModelCatalogPage() {
           </p>
         </div>
 
-        <Link href="/c/new" className="btn-ledger text-xs sm:text-sm px-4 py-2">
+        <Link href="/dashboard/evaluations/new" className="btn-ledger text-xs sm:text-sm px-4 py-2">
           Run Evaluation
         </Link>
       </div>

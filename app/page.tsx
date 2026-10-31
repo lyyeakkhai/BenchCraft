@@ -45,7 +45,7 @@ export default function HomePage() {
         {/* CTA Button Row */}
         <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
           <Link
-            href="/c/new"
+            href="/dashboard/evaluations/new"
             className="btn-ledger text-sm sm:text-base px-6 py-3.5 w-full sm:w-auto text-center justify-center shadow-sm"
           >
             Start Business Evaluation
@@ -252,7 +252,7 @@ export default function HomePage() {
             </ul>
 
             <Link
-              href="/c/new"
+              href="/dashboard/evaluations/new"
               className="btn-ledger w-full text-center py-3.5 text-sm font-semibold justify-center shadow-sm"
             >
               Start Evaluating Models Now

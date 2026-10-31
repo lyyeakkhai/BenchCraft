@@ -34,7 +34,7 @@ export function Footer() {
             </div>
 
             <Link
-              href="/c/new"
+              href="/dashboard/evaluations/new"
               className="btn-ledger text-xs py-2 px-4 shadow-xs"
             >
               Start Free Evaluation

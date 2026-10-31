@@ -147,7 +147,7 @@ export async function createEvaluationAction(formData: FormData) {
     console.error('Failed to save analysis results:', err);
   }
 
-  redirect(`/c/${comparisonId}/review`);
+  redirect(`/dashboard/evaluations/${comparisonId}/review`);
 }
 
 export async function updateScenariosAndConfirmAction(
@@ -193,7 +193,7 @@ export async function updateScenariosAndConfirmAction(
     }))
   );
 
-  redirect(`/c/${comparisonId}/arena`);
+  redirect(`/dashboard/evaluations/${comparisonId}/arena`);
 }
 
 export async function executeArenaEvaluationAction(comparisonId: string) {
@@ -398,7 +398,7 @@ export async function executeArenaEvaluationAction(comparisonId: string) {
     })
     .where(eq(comparisons.id, comparisonId));
 
-  redirect(`/c/${comparisonId}`);
+  redirect(`/dashboard/evaluations/${comparisonId}`);
 }
 
 export async function deleteEvaluationAction(comparisonId: string) {

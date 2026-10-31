@@ -7,7 +7,8 @@ import { Footer } from './footer';
 export function AppShellProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // Full-screen SaaS Dashboard mode: No marketing navbar, no marketing footer
+  // Full-screen SaaS Dashboard & Evaluation flow:
+  // Edge-to-edge workspace, no marketing navbar, no marketing footer
   const isDashboard = pathname.startsWith('/dashboard');
   const isPrintReport = pathname.includes('/report');
 
@@ -15,14 +16,9 @@ export function AppShellProvider({ children }: { children: React.ReactNode }) {
     return <div className="h-screen w-screen overflow-hidden flex flex-col">{children}</div>;
   }
 
-  // Evaluation workflow (/c/*): Navbar on top, full canvas, no marketing footer
+  // Legacy evaluation redirect routes (/c/*)
   if (pathname.startsWith('/c/')) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">{children}</main>
-      </div>
-    );
+    return <div className="min-h-screen flex flex-col">{children}</div>;
   }
 
   // Marketing pages (/, /product, /how-it-works, /pricing, /case-study)

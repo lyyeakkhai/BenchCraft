@@ -60,7 +60,7 @@ export default async function EvaluationsLedgerPage() {
           </p>
         </div>
 
-        <Link href="/c/new" className="btn-ledger text-xs sm:text-sm px-4 py-2">
+        <Link href="/dashboard/evaluations/new" className="btn-ledger text-xs sm:text-sm px-4 py-2">
           <Plus className="w-4 h-4" /> New Evaluation
         </Link>
       </div>
@@ -77,7 +77,7 @@ export default async function EvaluationsLedgerPage() {
               Create an evaluation to test models against your business documentation.
             </p>
           </div>
-          <Link href="/c/new" className="btn-ledger text-xs sm:text-sm">
+          <Link href="/dashboard/evaluations/new" className="btn-ledger text-xs sm:text-sm">
             Start Evaluation
           </Link>
         </div>
@@ -99,10 +99,10 @@ export default async function EvaluationsLedgerPage() {
               {userComparisons.map((comp) => {
                 const rec = recByComp.get(comp.id);
                 const getDestination = () => {
-                  if (comp.status === 'done') return `/c/${comp.id}`;
-                  if (comp.status === 'analyzed') return `/c/${comp.id}/review`;
-                  if (comp.status === 'testing' || comp.status === 'judged') return `/c/${comp.id}/arena`;
-                  return `/c/${comp.id}`;
+                  if (comp.status === 'done') return `/dashboard/evaluations/${comp.id}`;
+                  if (comp.status === 'analyzed') return `/dashboard/evaluations/${comp.id}/review`;
+                  if (comp.status === 'testing' || comp.status === 'judged') return `/dashboard/evaluations/${comp.id}/arena`;
+                  return `/dashboard/evaluations/${comp.id}`;
                 };
 
                 return (
@@ -162,7 +162,7 @@ export default async function EvaluationsLedgerPage() {
                         </Link>
                         {comp.status === 'done' && (
                           <Link
-                            href={`/c/${comp.id}/report`}
+                            href={`/dashboard/evaluations/${comp.id}/report`}
                             className="p-1 text-[#4B605C] hover:text-[#0A2E2B] transition"
                             title="Export PDF Memo"
                           >

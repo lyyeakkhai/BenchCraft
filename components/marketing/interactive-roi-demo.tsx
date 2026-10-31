@@ -207,7 +207,7 @@ export function InteractiveRoiDemo() {
             </div>
 
             <Link
-              href="/c/new"
+              href="/dashboard/evaluations/new"
               className="btn-ledger text-xs sm:text-sm px-4 py-2 flex items-center gap-1.5 w-full sm:w-auto justify-center"
             >
               Test Your Use Case Free

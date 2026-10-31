@@ -25,14 +25,14 @@ export default async function DashboardLayout({
   return (
     <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-[#EDF2EF]">
       {/* Sidebar for Desktop */}
-      <div className="hidden md:block h-screen flex-shrink-0">
+      <div className="hidden md:block h-screen flex-shrink-0 print:hidden">
         <DashboardSidebar totalUsed={totalUsed} maxLimit={maxLimit} />
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-[#EDF2EF]">
         {/* Dashboard Sub-Header */}
-        <header className="h-14 bg-white border-b border-[#D3DDD8] px-6 flex items-center justify-between gap-4 flex-shrink-0 z-10">
+        <header className="h-14 bg-white border-b border-[#D3DDD8] px-6 flex items-center justify-between gap-4 flex-shrink-0 z-10 print:hidden">
           <div className="flex items-center gap-2 text-xs text-[#4B605C]">
             <Link href="/dashboard" className="font-semibold text-[#0A2E2B] hover:text-[#1F5C55] transition flex items-center gap-1.5">
               Dashboard
@@ -47,7 +47,7 @@ export default async function DashboardLayout({
               Zero Data Retention Enforced
             </span>
             <Link
-              href="/c/new"
+              href="/dashboard/evaluations/new"
               className="btn-ledger text-xs py-1.5 px-3 rounded hidden sm:inline-flex"
             >
               + Evaluate

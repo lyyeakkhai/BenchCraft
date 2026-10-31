@@ -89,7 +89,7 @@ export function Navbar() {
                 Dashboard
               </Link>
               <Link
-                href="/c/new"
+                href="/dashboard/evaluations/new"
                 className="btn-ledger text-xs py-1.5 px-3 rounded-lg"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -178,7 +178,7 @@ export function Navbar() {
                 Go to Dashboard
               </Link>
               <Link
-                href="/c/new"
+                href="/dashboard/evaluations/new"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full text-center py-2 text-xs font-semibold text-white bg-[#0A2E2B] rounded-lg"
               >

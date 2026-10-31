@@ -78,7 +78,7 @@ export default async function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link href="/c/new" className="btn-ledger text-xs sm:text-sm px-4 py-2.5 shadow-sm">
+          <Link href="/dashboard/evaluations/new" className="btn-ledger text-xs sm:text-sm px-4 py-2.5 shadow-sm">
             <Plus className="w-4 h-4" /> Run New Evaluation
           </Link>
         </div>
@@ -263,7 +263,7 @@ export default async function DashboardPage() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-              <Link href="/c/new" className="btn-ledger text-xs sm:text-sm px-4 py-2 w-full sm:w-auto">
+              <Link href="/dashboard/evaluations/new" className="btn-ledger text-xs sm:text-sm px-4 py-2 w-full sm:w-auto">
                 <Plus className="w-4 h-4" /> Create Custom Evaluation
               </Link>
               <Link href="/case-study" className="btn-ledger-ghost text-xs sm:text-sm px-4 py-2 w-full sm:w-auto">
@@ -276,10 +276,10 @@ export default async function DashboardPage() {
             {userComparisons.slice(0, 5).map((comp) => {
               const rec = recByComp.get(comp.id);
               const getDestination = () => {
-                if (comp.status === 'done') return `/c/${comp.id}`;
-                if (comp.status === 'analyzed') return `/c/${comp.id}/review`;
-                if (comp.status === 'testing' || comp.status === 'judged') return `/c/${comp.id}/arena`;
-                return `/c/${comp.id}`;
+                if (comp.status === 'done') return `/dashboard/evaluations/${comp.id}`;
+                if (comp.status === 'analyzed') return `/dashboard/evaluations/${comp.id}/review`;
+                if (comp.status === 'testing' || comp.status === 'judged') return `/dashboard/evaluations/${comp.id}/arena`;
+                return `/dashboard/evaluations/${comp.id}`;
               };
 
               return (
