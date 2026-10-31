@@ -1,0 +1,51 @@
+import mammoth from 'mammoth';
+
+export interface ExtractedDocument {
+  name: string;
+  type: string;
+  size: number;
+  content: string;
+}
+
+export async function processUploadedFile(file: File): Promise<ExtractedDocument> {
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  if (file.size > maxSize) {
+    throw new Error(`File "${file.name}" exceeds the 10MB size limit.`);
+  }
+
+  const name = file.name;
+  const type = file.type || 'text/plain';
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  let content = '';
+
+  if (name.endsWith('.docx') || type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    try {
+      const result = await mammoth.extractRawText({ buffer });
+      content = result.value;
+    } catch {
+      throw new Error(`Could not parse DOCX file: ${name}`);
+    }
+  } else if (name.endsWith('.txt') || name.endsWith('.md') || type.includes('text')) {
+    content = buffer.toString('utf-8');
+  } else if (name.endsWith('.pdf') || type === 'application/pdf') {
+    // For PDF files, extract basic readable text streams or metadata
+    const rawStr = buffer.toString('utf-8');
+    // Extract readable text chunks if uncompressed
+    const textMatches = rawStr.match(/\(([^()]+)\)[\s]*Tj/g);
+    if (textMatches && textMatches.length > 5) {
+      content = textMatches.map((m) => m.replace(/[\(\)Tj\s]/g, '')).join(' ');
+    } else {
+      content = `[PDF Document: ${name}, Size: ${(file.size / 1024).toFixed(1)} KB. PDF business context submitted.]`;
+    }
+  } else {
+    content = buffer.toString('utf-8').slice(0, 50000);
+  }
+
+  return {
+    name,
+    type,
+    size: file.size,
+    content: content.trim().slice(0, 60000), // Cap context to avoid token overflow
+  };
+}
