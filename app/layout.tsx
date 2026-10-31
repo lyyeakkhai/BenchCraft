@@ -19,8 +19,43 @@ const hanken = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://benchcraft.dev'),
   title: 'BenchCraft — Right-Sized Model Evaluation',
   description: 'Objective, domain-grounded LLM selection and financial right-sizing for technical founders.',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/favicon-180.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.svg',
+  },
+  openGraph: {
+    title: 'BenchCraft — Right-Sized Model Evaluation',
+    description: 'Objective, domain-grounded LLM selection and financial right-sizing for technical founders.',
+    images: [
+      {
+        url: '/benchcraft-lockup-light.png',
+        width: 1200,
+        height: 630,
+        alt: 'BenchCraft Logo',
+      },
+      {
+        url: '/benchcraft-app-icon-1024.png',
+        width: 1024,
+        height: 1024,
+        alt: 'BenchCraft App Icon',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BenchCraft — Right-Sized Model Evaluation',
+    description: 'Objective, domain-grounded LLM selection and financial right-sizing for technical founders.',
+    images: ['/benchcraft-lockup-light.png'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
