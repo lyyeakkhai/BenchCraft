@@ -190,7 +190,7 @@ export default async function DashboardPage() {
             <div className="text-xs text-[#4B605C]">Claude 3.5 Sonnet / Opus</div>
             <div className="font-serif text-2xl font-bold text-[#0A2E2B]">$1,500.00 / mo</div>
             <div className="w-full bg-[#EDF2EF] rounded-full h-2 overflow-hidden">
-              <div className="bg-[#4B605C] h-2 rounded-full" style={{ width: '96%' }} />
+              <div className="bg-[#4B605C] h-2 rounded-full w-[96%]" />
             </div>
             <div className="flex justify-between text-[11px] text-[#4B605C]">
               <span>Quality Score: 95/100</span>
@@ -207,7 +207,7 @@ export default async function DashboardPage() {
             <div className="text-xs text-[#0A2E2B]">Claude Haiku 5.5 / Gemini Flash</div>
             <div className="font-serif text-2xl font-bold text-[#8A5A0B]">$15.00 / mo</div>
             <div className="w-full bg-[#D3DDD8] rounded-full h-2 overflow-hidden">
-              <div className="bg-[#1F5C55] h-2 rounded-full" style={{ width: '88%' }} />
+              <div className="bg-[#1F5C55] h-2 rounded-full w-[88%]" />
             </div>
             <div className="flex justify-between text-[11px] text-[#0A2E2B] font-semibold">
               <span>Quality Score: 88/100 (Passes bar: 85)</span>

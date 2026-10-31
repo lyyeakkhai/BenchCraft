@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { ShieldCheck, ArrowUpRight, ExternalLink } from 'lucide-react';
+import { BrandLogo } from '@/components/brand/brand-logo';
 
 export function Footer() {
   return (
@@ -10,13 +10,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 border-b border-[#D3DDD8] pb-10">
           <div className="space-y-4 max-w-sm">
             <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
-              <Image
-                src="/benchcraft-lockup-light.svg"
-                alt="BenchCraft"
-                width={140}
-                height={32}
-                className="h-8 w-auto"
-              />
+              <BrandLogo width={140} height={32} className="h-8 w-auto" />
             </Link>
             <p className="text-xs sm:text-sm text-[#4B605C] leading-relaxed">
               Objective, domain-grounded LLM evaluation and financial right-sizing for technical founders.

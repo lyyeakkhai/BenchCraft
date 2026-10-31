@@ -131,7 +131,7 @@ export default function SpendAnalyticsPage() {
               </span>
             </div>
             <div className="w-full bg-[#EDF2EF] rounded-full h-3 overflow-hidden">
-              <div className="bg-[#4B605C] h-3 rounded-full" style={{ width: '100%' }} />
+              <div className="bg-[#4B605C] h-3 rounded-full w-full" />
             </div>
           </div>
 

@@ -2,6 +2,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Newsreader, Hanken_Grotesk } from 'next/font/google';
 import { AppShellProvider } from '@/components/navigation/app-shell-provider';
+import { ThemeProvider } from '@/components/theme/theme-provider';
 import './globals.css';
 
 const newsreader = Newsreader({
@@ -59,9 +60,32 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${newsreader.variable} ${hanken.variable} h-full antialiased`}>
-        <body className="min-h-full flex flex-col bg-[#EDF2EF] text-[#0A2E2B] font-sans selection:bg-[#0A2E2B] selection:text-white">
-          <AppShellProvider>{children}</AppShellProvider>
+      <html
+        lang="en"
+        suppressHydrationWarning
+        className={`${newsreader.variable} ${hanken.variable} h-full antialiased`}
+      >
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                try {
+                  const theme = localStorage.getItem('benchcraft-theme');
+                  const isDark = theme === 'dark' || ((!theme || theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                  if (isDark) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (_) {}
+              `,
+            }}
+          />
+        </head>
+        <body className="min-h-full flex flex-col bg-[#EDF2EF] dark:bg-[#071513] text-[#0A2E2B] dark:text-[#F0F6F4] font-sans selection:bg-[#0A2E2B] selection:text-white dark:selection:bg-[#1F5C55] dark:selection:text-white transition-colors duration-200">
+          <ThemeProvider>
+            <AppShellProvider>{children}</AppShellProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

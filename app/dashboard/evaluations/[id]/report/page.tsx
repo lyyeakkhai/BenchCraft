@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { eq, and } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { comparisons, candidates, catalogModels } from '@/drizzle/schema';
 import { requireUser } from '@/lib/auth';
 import { ArrowLeft } from 'lucide-react';
 import { ReportPrintTrigger } from './report-print-trigger';
+import { BrandLogo } from '@/components/brand/brand-logo';
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -66,13 +66,9 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
       {/* Report Document Header */}
       <div className="flex items-center justify-between border-b-2 border-[#0A2E2B] pb-6">
         <div>
-          <Image
-            src="/benchcraft-lockup-light.svg"
-            alt="BenchCraft"
-            width={140}
-            height={32}
-            className="h-8 w-auto mb-3"
-          />
+          <div className="mb-3">
+            <BrandLogo width={140} height={32} className="h-8 w-auto" />
+          </div>
           <h1 className="text-2xl font-serif font-semibold text-[#0A2E2B]">Executive Evaluation Report</h1>
           <p className="text-xs text-[#4B605C] mt-0.5">
             Prepared for: <strong>{comp.title}</strong> · {comp.domainProfile?.industry || 'Business Evaluation'}

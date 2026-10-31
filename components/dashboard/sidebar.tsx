@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { UserButton, useUser } from '@clerk/nextjs';
 import {
@@ -15,6 +14,8 @@ import {
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
+import { BrandLogo } from '@/components/brand/brand-logo';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
 
 interface SidebarProps {
   totalUsed?: number;
@@ -64,15 +65,9 @@ export function DashboardSidebar({ totalUsed = 1, maxLimit = 20 }: SidebarProps)
         {/* Brand Header */}
         <div className="px-2 pt-1 flex items-center justify-between">
           <Link href="/" className="hover:opacity-90 transition-opacity flex items-center gap-2" title="Back to Homepage">
-            <Image
-              src="/benchcraft-lockup-light.svg"
-              alt="BenchCraft"
-              width={130}
-              height={30}
-              className="h-7 w-auto"
-              priority
-            />
+            <BrandLogo width={130} height={30} className="h-7 w-auto" priority />
           </Link>
+          <ThemeToggle />
         </div>
 
         {/* Workspace Switcher / Badge */}

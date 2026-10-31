@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
 import { Menu, X, ArrowRight, Plus, LayoutDashboard, Sparkles } from 'lucide-react';
+import { BrandLogo } from '@/components/brand/brand-logo';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -27,14 +28,7 @@ export function Navbar() {
         {/* Brand Lockup */}
         <div className="flex items-center gap-8">
           <Link href="/" className="hover:opacity-90 transition-opacity flex items-center gap-2">
-            <Image
-              src="/benchcraft-lockup-light.svg"
-              alt="BenchCraft"
-              width={140}
-              height={32}
-              className="h-7 w-auto"
-              priority
-            />
+            <BrandLogo width={140} height={32} className="h-7 w-auto" priority />
           </Link>
 
           {/* Desktop Navigation Links */}
@@ -60,6 +54,8 @@ export function Navbar() {
 
         {/* Right Section: Auth & Action CTA */}
         <div className="hidden sm:flex items-center gap-3">
+          <ThemeToggle />
+
           <Show when="signed-out">
             <div className="flex items-center gap-2">
               <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
@@ -110,6 +106,7 @@ export function Navbar() {
 
         {/* Mobile Hamburger Button */}
         <div className="flex sm:hidden items-center gap-2">
+          <ThemeToggle />
           <Show when="signed-in">
             <UserButton
               appearance={{

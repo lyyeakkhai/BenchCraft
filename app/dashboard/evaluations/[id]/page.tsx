@@ -130,12 +130,11 @@ export default async function EvaluationDetailPage({ params }: { params: Promise
             return (
               <div
                 key={cand.id}
-                className={`glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col justify-between relative transition shadow-sm ${
+                className={`glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col justify-between relative transition shadow-sm min-h-[360px] ${
                   isRec
                     ? 'border-2 border-[#B87A14] bg-white ring-2 ring-[#B87A14]/15'
                     : 'border border-[#D3DDD8] bg-white/80'
                 }`}
-                style={{ minHeight: '360px' }}
               >
                 <div>
                   {/* Badge */}

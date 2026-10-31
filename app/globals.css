@@ -15,6 +15,21 @@
     --signal-dark: #8A5A0B;
   }
 
+  .dark {
+    --bg: #071513;
+    --surface: #0E2421;
+    --ink: #F0F6F4;
+    --pine: #2E8B80;
+    --muted: #9BB3AC;
+    --line: #183833;
+    --bar: #234E47;
+    --signal: #E7B44A;
+    --signal-light: #F3CA68;
+    --signal-surface: #221B0A;
+    --signal-dark: #D4952B;
+    color-scheme: dark;
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -234,3 +249,151 @@
   border: 1px solid #D3DDD8;
   border-radius: 12px;
 }
+
+/* ========================================================================= */
+/* DARK THEME LUXURY SILICON VALLEY FINISHES                                */
+/* ========================================================================= */
+.dark body {
+  background-color: var(--bg);
+  color: var(--ink);
+}
+
+.dark .glass-panel {
+  background: rgba(14, 36, 33, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(28, 58, 53, 0.85);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.dark .glass-panel-subtle {
+  background: rgba(11, 28, 26, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(28, 58, 53, 0.5);
+}
+
+.dark .glass-pill {
+  background: rgba(14, 36, 33, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(28, 58, 53, 0.8);
+}
+
+.dark .glass-panel-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6);
+  border-color: rgba(231, 180, 74, 0.5);
+}
+
+.dark .mesh-glow {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(46, 139, 128, 0.12) 0px, transparent 55%),
+    radial-gradient(at 100% 100%, rgba(231, 180, 74, 0.08) 0px, transparent 55%),
+    radial-gradient(at 50% 50%, rgba(7, 21, 19, 0.6) 0px, transparent 100%);
+}
+
+.dark .ambient-hero {
+  background: radial-gradient(circle at 50% 0%, rgba(46, 139, 128, 0.14) 0%, rgba(7, 21, 19, 0) 70%),
+              radial-gradient(circle at 85% 30%, rgba(231, 180, 74, 0.08) 0%, rgba(7, 21, 19, 0) 50%);
+}
+
+/* Dark mode semantic color overrides */
+.dark .bg-white {
+  background-color: #0E2421 !important;
+}
+.dark .bg-white\/70,
+.dark .bg-white\/80,
+.dark .bg-white\/90,
+.dark .bg-white\/95 {
+  background-color: rgba(14, 36, 33, 0.85) !important;
+}
+
+.dark .bg-\[\#FAFCFB\] { background-color: #0A1C1A !important; }
+.dark .bg-\[\#EDF2EF\] { background-color: #081715 !important; }
+.dark .bg-\[\#F6FAF8\] { background-color: #071513 !important; }
+.dark .bg-\[\#FBF3E2\] { background-color: #221B0A !important; }
+.dark .bg-\[\#FBF3E2\]\/40 { background-color: rgba(34, 27, 10, 0.5) !important; }
+
+.dark .border-\[\#D3DDD8\] { border-color: #1A3934 !important; }
+.dark .border-\[\#D3DDD8\]\/80,
+.dark .border-\[\#D3DDD8\]\/60 { border-color: rgba(26, 57, 52, 0.7) !important; }
+.dark .border-\[\#A9BDB7\] { border-color: #234E47 !important; }
+.dark .border-\[\#E7B44A\] { border-color: #8A5A0B !important; }
+
+.dark .text-\[\#0A2E2B\] { color: #F0F6F4 !important; }
+.dark .text-\[\#4B605C\] { color: #9BB3AC !important; }
+.dark .text-\[\#1F5C55\] { color: #38A397 !important; }
+.dark .text-\[\#8A5A0B\] { color: #E7B44A !important; }
+.dark .text-\[\#B87A14\] { color: #F3CA68 !important; }
+
+.dark .btn-ledger {
+  background: #1F5C55;
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.dark .btn-ledger:hover {
+  background: #2E8B80;
+  box-shadow: 0 4px 14px rgba(46, 139, 128, 0.3);
+}
+
+.dark .btn-ledger-ghost {
+  background: transparent;
+  color: #F0F6F4;
+  border-color: #234E47;
+}
+.dark .btn-ledger-ghost:hover {
+  background: #0E2421;
+  border-color: #2E8B80;
+}
+
+.dark .pill {
+  background: #0E2421;
+  border-color: #234E47;
+  color: #9BB3AC;
+}
+.dark .pill.rec {
+  background: #221B0A;
+  border-color: #8A5A0B;
+  color: #F3CA68;
+}
+
+.dark .step .n {
+  border-color: #234E47;
+  color: #9BB3AC;
+}
+.dark .step.on {
+  color: #F0F6F4;
+}
+.dark .step.on .n {
+  background: #1F5C55;
+  border-color: #1F5C55;
+  color: #FFFFFF;
+}
+.dark .step.done .n {
+  background: #2E8B80;
+  border-color: #2E8B80;
+  color: #FFFFFF;
+}
+.dark .sep {
+  background: #1A3934;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  color: #F0F6F4;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #637D77;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #234E47;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2E8B80;
+}
+

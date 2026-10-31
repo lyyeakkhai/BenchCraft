@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { DashboardSidebar } from '@/components/dashboard/sidebar';
 import Link from 'next/link';
 import { ShieldCheck, Sparkles, ExternalLink } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
 
 export default async function DashboardLayout({
   children,
@@ -46,6 +47,7 @@ export default async function DashboardLayout({
               <ShieldCheck className="w-3.5 h-3.5" />
               Zero Data Retention Enforced
             </span>
+            <ThemeToggle />
             <Link
               href="/dashboard/evaluations/new"
               className="btn-ledger text-xs py-1.5 px-3 rounded hidden sm:inline-flex"
