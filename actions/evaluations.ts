@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { db } from '../lib/db';
 import { comparisons, documents, scenarios, candidates, arenaAnswers, catalogModels } from '../drizzle/schema';
 import { requireUser } from '../lib/auth';
@@ -12,7 +12,7 @@ import { selectCandidates } from '../lib/engine/selection';
 import { runCandidateScenario } from '../lib/engine/arena';
 import { judgeScenarioAnswers } from '../lib/engine/judge';
 import { calculateCandidateMetrics, generateEvaluationRecommendation } from '../lib/engine/recommender';
-import { ConversationLength, DomainProfile, Scenario } from '../lib/types';
+import { ConversationLength } from '../lib/types';
 import { getCatalog } from '../lib/catalog';
 
 export async function createEvaluationAction(formData: FormData) {
@@ -234,7 +234,7 @@ export async function executeArenaEvaluationAction(comparisonId: string) {
     await db.update(comparisons).set({ status: 'testing', updatedAt: new Date() }).where(eq(comparisons.id, comparisonId));
 
     // 1. Run all candidate models in parallel against scenarios
-    const allAnswersByModel: Record<string, any[]> = {};
+    const allAnswersByModel: Record<string, Awaited<ReturnType<typeof runCandidateScenario>>[]> = {};
 
     await Promise.all(
       compCandidates.map(async (cand) => {
@@ -294,7 +294,7 @@ export async function executeArenaEvaluationAction(comparisonId: string) {
     // 2. Judging: Score answers per scenario across candidates in parallel
     await db.update(comparisons).set({ status: 'judged', updatedAt: new Date() }).where(eq(comparisons.id, comparisonId));
 
-    const allScoredByModel: Record<string, any[]> = {};
+    const allScoredByModel: Record<string, Awaited<ReturnType<typeof judgeScenarioAnswers>>> = {};
     compCandidates.forEach((c) => (allScoredByModel[c.modelId] = []));
 
     await Promise.all(
@@ -309,7 +309,7 @@ export async function executeArenaEvaluationAction(comparisonId: string) {
               inputTokens: 0,
               outputTokens: 0,
               latencyMs: 0,
-              status: 'failed',
+              status: 'failed' as const,
             }
           );
         });
