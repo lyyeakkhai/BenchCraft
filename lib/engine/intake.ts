@@ -1,4 +1,5 @@
 import mammoth from 'mammoth';
+import * as XLSX from 'xlsx';
 
 export interface ExtractedDocument {
   name: string;
@@ -26,6 +27,26 @@ export async function processUploadedFile(file: File): Promise<ExtractedDocument
     } catch {
       throw new Error(`Could not parse DOCX file: ${name}`);
     }
+  } else if (name.endsWith('.xlsx') || name.endsWith('.xls') || type.includes('spreadsheet') || type.includes('excel')) {
+    try {
+      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      const sheetTexts: string[] = [];
+      for (const sheetName of workbook.SheetNames) {
+        const sheet = workbook.Sheets[sheetName];
+        if (sheet) {
+          const csv = XLSX.utils.sheet_to_csv(sheet);
+          if (csv && csv.trim()) {
+            sheetTexts.push(`[Sheet: ${sheetName}]\n${csv.trim()}`);
+          }
+        }
+      }
+      content = sheetTexts.join('\n\n');
+    } catch (err) {
+      console.warn(`Could not parse Excel spreadsheet: ${name}`, err);
+      content = `[Excel Spreadsheet: ${name}, Size: ${(file.size / 1024).toFixed(1)} KB]`;
+    }
+  } else if (name.endsWith('.csv') || type === 'text/csv') {
+    content = buffer.toString('utf-8');
   } else if (name.endsWith('.txt') || name.endsWith('.md') || type.includes('text')) {
     content = buffer.toString('utf-8');
   } else if (name.endsWith('.pdf') || type === 'application/pdf') {

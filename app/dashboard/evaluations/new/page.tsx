@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createEvaluationAction } from '@/actions/evaluations';
 import { Stepper } from '@/components/brand/stepper';
 import { ProviderLogo } from '@/components/brand/provider-logo';
@@ -11,6 +11,9 @@ import {
   CheckCircle2,
   TrendingDown,
   FileText,
+  FileSpreadsheet,
+  Loader2,
+  Sparkles,
 } from 'lucide-react';
 
 export default function NewEvaluationPage() {
@@ -24,6 +27,27 @@ export default function NewEvaluationPage() {
   const [convLength, setConvLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
+
+  const loadingSteps = [
+    'Parsing business policies & document context…',
+    'Synthesizing domain test scenarios and rubrics…',
+    'Selecting right-sized candidate models across tiers…',
+    'Calibrating blinded arena & cost thresholds…',
+  ];
+
+  useEffect(() => {
+    if (!isSubmitting) return;
+
+    const interval = setInterval(() => {
+      setLoadingStep((prev) => (prev + 1) % loadingSteps.length);
+    }, 2200);
+
+    return () => {
+      clearInterval(interval);
+      setLoadingStep(0);
+    };
+  }, [isSubmitting, loadingSteps.length]);
 
   const taskOptions = ['Customer support chat', 'Document Q&A', 'Coding', 'Data extraction'];
 
@@ -331,7 +355,7 @@ export default function NewEvaluationPage() {
                 <input
                   type="file"
                   multiple
-                  accept=".pdf,.docx,.txt,.md"
+                  accept=".pdf,.docx,.xlsx,.xls,.csv,.txt,.md"
                   aria-label="Upload domain context documents"
                   onChange={handleFileChange}
                   className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
@@ -341,41 +365,51 @@ export default function NewEvaluationPage() {
                 </div>
                 <b className="text-sm text-ink">Click or drag documents here</b>
                 <span className="text-xs text-muted mt-0.5">
-                  PDF, DOCX, TXT, or Markdown (up to 10 MB each)
+                  PDF, Word, Excel (XLSX, CSV), or text (up to 10 MB each)
                 </span>
               </div>
 
               {selectedFiles.length > 0 ? (
                 <div className="space-y-2 pt-2 border-t border-rule">
-                  {selectedFiles.map((file, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between py-2 px-3 rounded-input bg-paper border border-rule text-xs"
-                    >
-                      <div className="flex items-center gap-2 truncate pr-2">
-                        <FileText className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
-                        <span className="font-semibold text-ink truncate">{file.name}</span>
-                        <span className="text-muted text-xs flex-shrink-0 num">
-                          {(file.size / 1024).toFixed(0)} KB
-                        </span>
+                  {selectedFiles.map((file, idx) => {
+                    const isSpreadsheet =
+                      file.name.endsWith('.xlsx') ||
+                      file.name.endsWith('.xls') ||
+                      file.name.endsWith('.csv');
+                    return (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between py-2 px-3 rounded-input bg-paper border border-rule text-xs"
+                      >
+                        <div className="flex items-center gap-2 truncate pr-2">
+                          {isSpreadsheet ? (
+                            <FileSpreadsheet className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
+                          ) : (
+                            <FileText className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
+                          )}
+                          <span className="font-semibold text-ink truncate">{file.name}</span>
+                          <span className="text-muted text-xs flex-shrink-0 num">
+                            {(file.size / 1024).toFixed(0)} KB
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-accent" aria-hidden="true" />
+                          <button
+                            type="button"
+                            onClick={() => removeFile(idx)}
+                            className="text-muted hover:text-error p-1 cursor-pointer"
+                            title="Remove file"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-accent" aria-hidden="true" />
-                        <button
-                          type="button"
-                          onClick={() => removeFile(idx)}
-                          className="text-muted hover:text-error p-1 cursor-pointer"
-                          title="Remove file"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-xs text-muted py-1 text-center">
-                  Attach business policies, FAQs, or guidelines to ground your evaluation.
+                  Attach business policies, FAQs, spreadsheets, or guidelines to ground your evaluation.
                 </div>
               )}
 
@@ -389,18 +423,60 @@ export default function NewEvaluationPage() {
           </section>
         </div>
 
-        <div className="ledger-surface p-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted">
-            Next, we match models to your use case and compare the top 3.
-          </p>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            aria-busy={isSubmitting}
-            className="btn-ledger w-full sm:w-auto"
-          >
-            {isSubmitting ? 'Finding your model…' : 'Find My model'}
-          </button>
+        <div className="ledger-surface p-5 sm:px-8 space-y-4">
+          {isSubmitting && (
+            <div className="space-y-2 animate-in fade-in duration-300">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-accent flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                  </span>
+                  Processing Evaluation Pipeline
+                </span>
+                <span className="text-muted num">Step {loadingStep + 1} of {loadingSteps.length}</span>
+              </div>
+              <div className="w-full bg-paper-2 rounded-full h-1.5 overflow-hidden border border-rule">
+                <div
+                  className="bg-accent h-1.5 rounded-full transition-all duration-700 ease-out"
+                  style={{ width: `${((loadingStep + 1) / loadingSteps.length) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="space-y-0.5 text-center sm:text-left">
+              <p className="text-sm font-medium text-ink transition-all duration-300">
+                {isSubmitting
+                  ? loadingSteps[loadingStep]
+                  : 'Next, we match models to your use case and compare the top 3.'}
+              </p>
+              <p className="text-xs text-muted">
+                {isSubmitting
+                  ? 'BenchCraft tests candidate models in memory across size tiers'
+                  : 'Synthesizes realistic business scenarios and sets up the blinded arena.'}
+              </p>
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+              className="btn-ledger w-full sm:w-auto flex items-center justify-center gap-2 min-w-[170px]"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-paper-2" aria-hidden="true" />
+                  <span>Finding model…</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" aria-hidden="true" />
+                  <span>Find My model</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </form>
     </div>

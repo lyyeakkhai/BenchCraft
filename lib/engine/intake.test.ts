@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { resolveBusinessInput, ExtractedDocument } from './intake';
+import * as XLSX from 'xlsx';
+import { resolveBusinessInput, processUploadedFile, ExtractedDocument } from './intake';
 
 describe('resolveBusinessInput', () => {
   it('accepts valid text description without files', () => {
@@ -49,5 +50,35 @@ describe('resolveBusinessInput', () => {
     const result = resolveBusinessInput({ description: desc, documents: docs });
     expect(result.isValid).toBe(true);
     expect(result.effectiveDescription).toContain(desc);
+  });
+});
+
+describe('processUploadedFile formats', () => {
+  it('processes CSV file correctly', async () => {
+    const csvContent = 'Customer,Issue,Resolution\nJohn,Order Delay,Expedited\nAlice,Size Exchange,Approved';
+    const file = new File([csvContent], 'support-cases.csv', { type: 'text/csv' });
+    const doc = await processUploadedFile(file);
+    expect(doc.name).toBe('support-cases.csv');
+    expect(doc.content).toContain('Order Delay');
+    expect(doc.content).toContain('Size Exchange');
+  });
+
+  it('processes XLSX spreadsheet correctly', async () => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([
+      ['Product', 'SKU', 'DeliveryPolicy'],
+      ['Silk Dress', 'SKU-001', 'Free in Cambodia'],
+    ]);
+    XLSX.utils.book_append_sheet(wb, ws, 'Catalog');
+    const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const file = new File([buffer], 'catalog.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    const doc = await processUploadedFile(file);
+    expect(doc.name).toBe('catalog.xlsx');
+    expect(doc.content).toContain('[Sheet: Catalog]');
+    expect(doc.content).toContain('Silk Dress');
+    expect(doc.content).toContain('Free in Cambodia');
   });
 });
