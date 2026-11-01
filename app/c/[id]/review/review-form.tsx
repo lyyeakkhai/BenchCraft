@@ -75,6 +75,12 @@ export function ReviewForm({
     try {
       await updateScenariosAndConfirmAction(comparisonId, scenarios, qualityBar);
     } catch (err) {
+      if (
+        (err as Error)?.message === 'NEXT_REDIRECT' ||
+        (err as { digest?: string })?.digest?.startsWith('NEXT_REDIRECT')
+      ) {
+        throw err;
+      }
       console.error(err);
       setIsRunning(false);
       alert((err as Error).message || 'Failed to start arena evaluation.');

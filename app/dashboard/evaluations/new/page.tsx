@@ -61,8 +61,15 @@ export default function NewEvaluationPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
+      const oversized = filesArray.find((f) => f.size > 10 * 1024 * 1024);
+      if (oversized) {
+        alert(`File "${oversized.name}" exceeds the 10 MB limit.`);
+        e.target.value = '';
+        return;
+      }
       const combined = [...selectedFiles, ...filesArray].slice(0, 5);
       setSelectedFiles(combined);
+      e.target.value = '';
     }
   };
 
@@ -122,18 +129,30 @@ export default function NewEvaluationPage() {
 
       <form
         action={async (formData: FormData) => {
+          if (!description.trim() && selectedFiles.length === 0) {
+            alert('Please describe your business use case or attach a business document.');
+            return;
+          }
           setIsSubmitting(true);
           selectedFiles.forEach((file) => formData.append('files', file));
           formData.set('title', title);
           formData.set(
             'description',
-            `${description}\n\n[Main Task: ${mainTask} | Priority: ${priority} | Target Conversations: ${conversations}]`
+            description.trim()
+              ? `${description}\n\n[Main Task: ${mainTask} | Priority: ${priority} | Target Conversations: ${conversations}]`
+              : `[Main Task: ${mainTask} | Priority: ${priority} | Target Conversations: ${conversations}]`
           );
           formData.set('conversationsPerMonth', conversations.toString());
           formData.set('conversationLength', convLength);
           try {
             await createEvaluationAction(formData);
           } catch (err) {
+            if (
+              (err as Error)?.message === 'NEXT_REDIRECT' ||
+              (err as { digest?: string })?.digest?.startsWith('NEXT_REDIRECT')
+            ) {
+              throw err;
+            }
             console.error(err);
             setIsSubmitting(false);
             alert((err as Error).message || 'Failed to analyze business.');
@@ -165,11 +184,10 @@ export default function NewEvaluationPage() {
               <textarea
                 id="project-desc"
                 rows={5}
-                required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="ledger-input leading-relaxed"
-                placeholder="Describe your customers, languages, policies, and key requirements…"
+                placeholder="Describe your customers, languages, policies, and key requirements, or attach documents on the right…"
               />
             </div>
 
@@ -357,7 +375,7 @@ export default function NewEvaluationPage() {
                 </div>
               ) : (
                 <div className="text-xs text-muted py-1 text-center">
-                  Optional: If no documents are attached, scenarios are synthesized from your description.
+                  Attach business policies, FAQs, or guidelines to ground your evaluation.
                 </div>
               )}
 
@@ -373,7 +391,7 @@ export default function NewEvaluationPage() {
 
         <div className="ledger-surface p-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted">
-            Next step: BenchCraft synthesizes 8 domain scenarios and prepares the blinded arena.
+            Next, we match models to your use case and compare the top 3.
           </p>
           <button
             type="submit"
@@ -381,7 +399,7 @@ export default function NewEvaluationPage() {
             aria-busy={isSubmitting}
             className="btn-ledger w-full sm:w-auto"
           >
-            {isSubmitting ? 'Synthesizing scenarios…' : 'Synthesize scenarios & run arena'}
+            {isSubmitting ? 'Finding your model…' : 'Find My model'}
           </button>
         </div>
       </form>

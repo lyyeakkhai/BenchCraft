@@ -49,3 +49,52 @@ export async function processUploadedFile(file: File): Promise<ExtractedDocument
     content: content.trim().slice(0, 60000), // Cap context to avoid token overflow
   };
 }
+
+export interface ResolveBusinessInputParams {
+  description?: string | null;
+  documents: ExtractedDocument[];
+}
+
+export interface ResolveBusinessInputResult {
+  isValid: boolean;
+  effectiveDescription: string;
+  error?: string;
+}
+
+export function resolveBusinessInput(params: ResolveBusinessInputParams): ResolveBusinessInputResult {
+  const rawDesc = (params.description || '').trim();
+  const hasDocuments = params.documents && params.documents.length > 0;
+
+  if (rawDesc.length < 10 && !hasDocuments) {
+    return {
+      isValid: false,
+      effectiveDescription: '',
+      error: 'Please describe your business use case (at least 10 characters) or upload a business document.',
+    };
+  }
+
+  if (rawDesc.length >= 10 && !hasDocuments) {
+    return {
+      isValid: true,
+      effectiveDescription: rawDesc,
+    };
+  }
+
+  const docSummaryBlock = params.documents
+    .map((doc) => `[Document: ${doc.name}]\n${doc.content.slice(0, 500)}`)
+    .join('\n\n');
+
+  if (rawDesc.length >= 10) {
+    return {
+      isValid: true,
+      effectiveDescription: `${rawDesc}\n\nAttached Business Documents:\n${docSummaryBlock}`,
+    };
+  }
+
+  const prefix = rawDesc ? `${rawDesc}\n\n` : '';
+  return {
+    isValid: true,
+    effectiveDescription: `${prefix}Business details derived from uploaded documents:\n${docSummaryBlock}`,
+  };
+}
+

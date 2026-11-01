@@ -6,7 +6,7 @@ import { eq, and } from 'drizzle-orm';
 import { db } from '../lib/db';
 import { comparisons, documents, scenarios, candidates, arenaAnswers, catalogModels } from '../drizzle/schema';
 import { requireUser } from '../lib/auth';
-import { processUploadedFile } from '../lib/engine/intake';
+import { processUploadedFile, resolveBusinessInput } from '../lib/engine/intake';
 import { analyzeBusinessAndGenerateScenarios } from '../lib/engine/analysis';
 import { selectCandidates } from '../lib/engine/selection';
 import { runCandidateScenario } from '../lib/engine/arena';
@@ -23,10 +23,6 @@ export async function createEvaluationAction(formData: FormData) {
   const conversationsPerMonth = parseInt((formData.get('conversationsPerMonth') as string) || '10000', 10);
   const conversationLength = ((formData.get('conversationLength') as string) || 'medium') as ConversationLength;
 
-  if (!description || description.trim().length < 10) {
-    throw new Error('Please provide at least 10 characters describing your business use case.');
-  }
-
   // 1. Process files
   const fileEntries = formData.getAll('files') as File[];
   const validFiles = fileEntries.filter((f) => f && f.size > 0 && f.name);
@@ -41,7 +37,14 @@ export async function createEvaluationAction(formData: FormData) {
     }
   }
 
-  // 2. Create Draft Comparison in DB
+  // 2. Validate and resolve business input (text and/or documents)
+  const resolved = resolveBusinessInput({ description, documents: extractedDocs });
+  if (!resolved.isValid) {
+    throw new Error(resolved.error || 'Please describe your business use case (at least 10 characters) or upload a business document.');
+  }
+  const effectiveDescription = resolved.effectiveDescription;
+
+  // 3. Create Draft Comparison in DB
   let comparisonId: string;
   try {
     const [inserted] = await db
@@ -49,7 +52,7 @@ export async function createEvaluationAction(formData: FormData) {
       .values({
         clerkUserId: userId,
         title,
-        description,
+        description: effectiveDescription,
         conversationsPerMonth,
         conversationLength,
         status: 'draft',
@@ -74,9 +77,9 @@ export async function createEvaluationAction(formData: FormData) {
     throw new Error('Database connection failed. Please ensure DATABASE_URL is properly configured.');
   }
 
-  // 3. Run Domain Analysis
+  // 4. Run Domain Analysis
   const { profile, scenarios: generatedScenarios } = await analyzeBusinessAndGenerateScenarios({
-    description,
+    description: effectiveDescription,
     docSummaries: extractedDocs.map((d) => d.content),
     conversationsPerMonth,
     conversationLength,

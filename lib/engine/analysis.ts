@@ -79,7 +79,8 @@ Return ONLY raw JSON adhering to:
     console.warn('[Analysis] LLM structured call failed or fallback active. Using intelligent domain inference.', error);
 
     // High quality deterministic domain fallback for demo/reliability
-    const descLower = params.description.toLowerCase();
+    const combinedContext = (params.description + ' ' + params.docSummaries.join(' ')).trim();
+    const descLower = combinedContext.toLowerCase();
     let taskCategory: TaskCategory = 'support_chat';
     let industry = 'E-commerce & Customer Services';
 
